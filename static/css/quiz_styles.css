@@ -1,0 +1,117 @@
+
+@font-face {
+    font-family: 'Pixelion';
+    src: url("/static/fonts/Pixelon-E4JEg.otf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  body {
+    font-family: 'Pixelion', sans-serif;
+    background-color: #fff6e5;
+    color: #4a444a;
+  }
+
+  .header {
+    background-color: #4a444a;
+    color: white;
+    padding: 1rem 2rem;
+    border-bottom: 5px solid #4a444a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .avatar {
+    background-color: #4a444a;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff7f0;
+    font-size: 1.2rem;
+  }
+
+  .course-card {
+    border-radius: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .course-card input, textarea {
+  color: black;
+  }
+
+  .custom-bg {
+  background-color: #e8e0d9;
+  }
+
+  .btn-color {
+    background-color: #4a444a;
+    color: #fff6e5;
+    font-weight: bold;
+    border-radius: 1rem;
+    padding: 0.6rem 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .btn-color:hover {
+    opacity: 0.9;
+  }
+
+  input, textarea {
+    width: 100%;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+    background-color: #e8e0d9;
+    
+  }
+
+  .add-question-btn {
+    background-color: #4a444a;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  .remove-question-btn {
+    background-color: #4a444a;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+  }
+
+  .submit-btn{
+    background-color: #4a444a;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+  }
+
+  .dashed {
+    border-top: 2px dashed #4a444a;
+    padding-top: 1rem;
+  }
+
+  select.form-control {
+    background-color: #e8e0d9;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+  }
+
+  .form-control {
+    background-color: #e8e0d9; 
+  }
+
+  .hidden {
+    display: none;
+  }

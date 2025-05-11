@@ -1,0 +1,9 @@
+{% extends 'main_base.html' %}
+{% block title %}Create/Edit Quiz{% endblock %}
+{% block content %}
+{% if user.is_authenticated %}
+    <p>Hello, {{ user.username }}! Welcome to the dashboard</p>
+{% else %}
+    
+{% endif %}
+{% endblock %}
