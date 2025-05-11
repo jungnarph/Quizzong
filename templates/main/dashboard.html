@@ -1,9 +1,14 @@
 {% extends 'main_base.html' %}
 {% block title %}Create/Edit Quiz{% endblock %}
 {% block content %}
+{% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <p class="message">{{ message }}</p>
+      {% endfor %}
+    </div>
+{% endif %}
 {% if user.is_authenticated %}
     <p>Hello, {{ user.username }}! Welcome to the dashboard</p>
-{% else %}
-    
 {% endif %}
 {% endblock %}

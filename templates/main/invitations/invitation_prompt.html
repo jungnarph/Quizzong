@@ -1,0 +1,12 @@
+{% extends "main_base.html" %}
+{% block title %}Join Course Invitation{% endblock %}
+{% block content %}
+<h2>You've been invited to join "{{ course.title }}"</h2>
+<p>Invited by: {{ invitation.inviter.username }}</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button name="action" value="accept">Accept Invitation</button>
+  <button name="action" value="refuse">Refuse Invitation</button>
+</form>
+{% endblock %}

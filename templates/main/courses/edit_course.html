@@ -1,0 +1,20 @@
+{% extends "main_base.html" %}
+{% load static %}
+{% block title %}Create Course{% endblock %}
+{% block content %}
+  <h2>Edit Course: {{ course.title }}</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}  <!-- Display form fields as paragraphs -->
+    <button type="submit">Create Course</button>
+  </form>
+
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <p class="message">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}

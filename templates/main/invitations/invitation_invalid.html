@@ -1,0 +1,7 @@
+{% extends "main_base.html" %}
+{% block title %}Invalid Invitation{% endblock %}
+{% block content %}
+<h2>Invalid Invitation Link</h2>
+<p>The invitation link you used is invalid or does not exist.</p>
+<a href="{% url 'course_list' %}">Return to course list</a>
+{% endblock %}

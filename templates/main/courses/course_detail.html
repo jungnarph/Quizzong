@@ -1,0 +1,47 @@
+{% extends "main_base.html" %}
+{% load static %}
+{% block title %} {{ course.title }} {% endblock %}
+{% block content %}
+{% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <p class="message">{{ message }}</p>
+      {% endfor %}
+    </div>
+{% endif %}
+<h1>{{ course.title }}</h1>
+<p>{{ course.description }}</p>
+<p>Created by: {{ course.owner }}</p>
+<p>Created on: {{ course.created_at }}</p>
+<p>Updated on: {{ course.updated_at }}</p>
+<p>Members:</p>
+<ul>
+  {% for enrollment in course.enrollments.all %}
+    <li>
+        {{ enrollment.user.username }}
+        {% if enrollment.user == course.owner %}
+            (Owner)
+        {% endif %}
+        {% if enrollment.user == user %}
+                (You)
+        {% endif %}
+    </li>
+  {% empty %}
+    <li>No members in this course.</li>
+  {% endfor %}
+</ul>
+
+{% if user == course.owner %}
+<p>Admin Menu:</p>
+<ul>
+    <li><a href="{% url 'get_course_invitation' course.id %}">Share</a></li>
+    <li><a href="{% url 'edit_course' course.id %}">Edit Course</a></li>
+    <li><a href="">Delete Course</a></li>
+</ul>
+{% if invitation %}
+  <p>Invitation Link:</p>
+  <code>{{ request.build_absolute_uri }}join/{{ invitation.invitation_code }}/</code>
+{% endif %}
+{% endif %}
+
+{% endblock %}

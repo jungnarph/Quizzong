@@ -1,0 +1,21 @@
+{% extends 'main_base.html' %}
+{% block title %}Course List{% endblock %}
+
+{% block content %}
+<h1>Course List</h1>
+<a href="{% url 'create_course' %}">Create Course</a>
+<a href="">Join Course</a>
+
+<h2>My Courses</h2>
+<ul>
+  {% for course in courses %}
+  {% if course.owner == user %}
+  <li><a href="{{ course.get_absolute_url }}">{{ course.owner }} - {{ course.title }} (Owned)</a></li>
+  {% else %}
+  <li><a href="{{ course.get_absolute_url }}">{{ course.owner }} - {{ course.title }}</a></li>
+  {% endif %}
+  {% empty %}
+  <li>You are not enrolled in any courses.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

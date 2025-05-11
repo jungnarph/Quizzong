@@ -1,0 +1,7 @@
+{% extends "main_base.html" %}
+{% block title %}Invitation Expired{% endblock %}
+{% block content %}
+<h2>Sorry, this invitation has expired.</h2>
+<p>The invitation link for the course "{{ course.title }}" is no longer valid.</p>
+<a href="{% url 'course_list' %}">Return to courses</a>
+{% endblock %}
