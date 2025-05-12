@@ -23,6 +23,9 @@ class Course(models.Model):
     def get_absolute_url(self):
         return f"/courses/{self.id}/"
     
+    def __str__(self):
+        return self.title
+    
 class CourseEnrollment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')

@@ -31,6 +31,9 @@
       <div class="row">
         <div class="col-md-6">
           <div class="course-card">
+            <label for="course">Course:</label>
+            {{ quiz_form.course }}
+            <p></p>
             <label for="title">Title:</label>
             {{ quiz_form.title }}
         
@@ -115,4 +118,18 @@
       formTarget.append(copyEmpQuestionForm);
     }
   </script>
+  {% endblock %}
+  {% block external_links %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
+  <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+  {% endblock %}
+  {% block scripts %}
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const input = document.querySelector('input.tagify');
+    if (input) {
+      new Tagify(input);
+    }
+  });
+</script>
   {% endblock %}

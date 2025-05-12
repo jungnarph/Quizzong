@@ -174,7 +174,8 @@ def course_quiz_list(request, course_id):
 
 @login_required
 def create_quiz(request, course_id):
-    quiz_form = QuizForm(request.POST or None)
+    course = get_object_or_404(Course, pk=course_id)
+    quiz_form = QuizForm(request.POST or None, course=course)
     QuestionFormset = modelformset_factory(Question, form=QuestionForm, extra=1)
     qs = Question.objects.none()
     question_formset = QuestionFormset(request.POST or None, queryset = qs)
