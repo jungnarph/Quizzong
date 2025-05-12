@@ -13,12 +13,16 @@
       {% endfor %}
     </ul>
   {% else %}
-    <p>No quizzes found for this course. <a href="">(Create a new quiz)</a></p>
+    <p>No quizzes found for this course. 
+      {% if user == course.owner %}
+      <a href="{% url 'create_quiz' course.id %}">(Create a new quiz)</a>
+      {% endif %}
+    </p>
   {% endif %}
     {% if user == course.owner %}
         <p>Admin Menu:</p>
         <ul>
-        <li><a href="">Create Quiz</a></li>
+        <li><a href="{% url 'create_quiz' course.id %}">Create Quiz</a></li>
         </ul>
     {% else %}
         <p>Menu: </p>

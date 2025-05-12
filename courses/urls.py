@@ -11,4 +11,5 @@ urlpatterns = [
     # path('<int:course_id>/members/', views.show_course_members, name='show_course_members'),
 
     path('<int:course_id>/quizzes/', views.course_quiz_list, name='course_quiz_list'),
+    path('<int:course_id>/quizzes/create/', views.create_quiz, name='create_quiz'),
 ]

@@ -1,11 +1,13 @@
-from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.forms import modelformset_factory
+from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from django.urls import reverse
 from .forms import CourseForm
+from .forms import QuizForm, QuestionForm
 from .models import Course, CourseEnrollment, CourseInvitation
-from .models import Quiz
+from .models import Quiz, Question, Option
 
 @login_required
 def course_list(request):
@@ -169,3 +171,32 @@ def course_quiz_list(request, course_id):
     }
     
     return render(request, 'main/quizzes/course_quiz_list.html', context)
+
+@login_required
+def create_quiz(request, course_id):
+    quiz_form = QuizForm(request.POST or None)
+    QuestionFormset = modelformset_factory(Question, form=QuestionForm, extra=1)
+    qs = Question.objects.none()
+    question_formset = QuestionFormset(request.POST or None, queryset = qs)
+    context = {
+        "quiz_form": quiz_form,
+        "question_formset": question_formset,
+    }
+    if all([quiz_form.is_valid(), question_formset.is_valid()]):
+        quiz = quiz_form.save(commit=False)
+        quiz.course_id = course_id
+        quiz.owner = request.user
+        quiz.save()
+        quiz_form.save_m2m()  # Just in case other M2M fields exist
+
+        # Save questions and add to quiz
+        for question_form in question_formset:
+            question = question_form.save(commit=False)
+            question.course_id = course_id
+            question.owner = request.user
+            question.save()
+            quiz.questions.add(question)  # <-- This links the question to the quiz
+            
+        return redirect(quiz.get_absolute_url())
+
+    return render(request, 'main/quizzes/create_update_quiz.html', context)
