@@ -84,14 +84,12 @@ class Quiz(models.Model):
 class Question(models.Model):
     SHORT = 'short'
     LONG = 'long'
-    MC_SINGLE = 'mc_single'
-    MC_MULTIPLE = 'mc_multiple'
+    CHOICE = 'choice'
 
     TYPES = [
         (SHORT, 'Short Answer'),
         (LONG, 'Long Answer'),
-        (MC_SINGLE, 'Multiple Choice (Single Answer)'),
-        (MC_MULTIPLE, 'Multiple Choice (Multiple Answers)'),
+        (CHOICE, 'Multiple Choice'),
     ]
 
     course = models.ForeignKey(Course, related_name="questions", on_delete=models.CASCADE)
@@ -108,18 +106,18 @@ class Question(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def clean(self):
-        if self.type in [self.MC_SINGLE, self.MC_MULTIPLE]:
+        if self.type in [self.CHOICE]:
             correct_options = self.options.filter(is_correct=True).count()
 
             if correct_options == 0:
                 raise ValidationError("Multiple Choice questions must have at least one correct option.")
 
-            if self.type == self.MC_SINGLE and correct_options > 1:
+            if self.type == self.CHOICE and correct_options > 1:
                 raise ValidationError("Single-answer MCQs must have only one correct option.")
 
-        elif self.type in [self.SHORT, self.LONG]:
+        elif self.type in [self.SHORT]:
             if not self.correct_answer:
-                raise ValidationError("Short and Long answer questions must have a correct_answer.")
+                raise ValidationError("Short answer questions must have a correct_answer.")
 
     def get_all_quiz_questions(self):
         return self.quiz.questions.all()
