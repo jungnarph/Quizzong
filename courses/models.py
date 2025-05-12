@@ -68,7 +68,6 @@ class Quiz(models.Model):
     due_date = models.DateTimeField()
     time_limit = models.DurationField()
 
-    publish = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
@@ -103,7 +102,7 @@ class Question(models.Model):
     order = models.PositiveIntegerField(default=0)
 
     correct_answer = models.TextField(blank=True, null=True)  # Used only for SHORT/LONG types
-    tags = TaggableManager(through=TaggedQuestion, blank=True)
+    tags = TaggableManager()
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -121,22 +120,9 @@ class Question(models.Model):
         elif self.type in [self.SHORT, self.LONG]:
             if not self.correct_answer:
                 raise ValidationError("Short and Long answer questions must have a correct_answer.")
-        
-        if not self.pk and not self.tags.exists():
-            raise ValidationError("Each question must have at least one tag.")
 
     def get_all_quiz_questions(self):
         return self.quiz.questions.all()
-    
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-        # Only apply this tagging logic if the question is already saved and has quizzes assigned
-        for quiz in self.quizzes.all():
-            quiz_tag = slugify(quiz.title)
-            existing_tags = [slugify(tag) for tag in self.tags.names()]
-            if quiz_tag not in existing_tags:
-                self.tags.add(quiz_tag)
 
     def __str__(self):
         return f"{self.text[:50]} ({self.get_type_display()})"

@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'taggit',
 ]
 
-TAGGIT_TAG_MODEL = 'courses.SluggedTag'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

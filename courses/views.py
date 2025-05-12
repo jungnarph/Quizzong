@@ -186,7 +186,6 @@ def create_quiz(request, course_id):
     if all([quiz_form.is_valid(), question_formset.is_valid()]):
         quiz = quiz_form.save(commit=False)
         quiz.course_id = course_id
-        quiz.owner = request.user
         quiz.save()
         quiz_form.save_m2m()  # Just in case other M2M fields exist
 

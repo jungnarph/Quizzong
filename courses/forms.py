@@ -55,6 +55,12 @@ class QuestionForm(forms.ModelForm):
             'correct_answer': forms.Textarea(attrs={'rows': 2}),
         }
 
+    def clean_tags(self):
+        tags = self.cleaned_data.get('tags')
+        if not tags:
+            raise forms.ValidationError("Each question must have at least one tag.")
+        return tags
+
 class OptionForm(forms.ModelForm):
     class Meta:
         model = Option
