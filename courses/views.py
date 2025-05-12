@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.urls import reverse
 from .forms import CourseForm
 from .models import Course, CourseEnrollment, CourseInvitation
+from .models import Quiz
 
 @login_required
 def course_list(request):
@@ -154,3 +155,17 @@ def edit_course(request, course_id):
 
     return render(request, 'main/courses/edit_course.html', context)
 
+@login_required
+def course_quiz_list(request, course_id):
+    # Get the course using the provided course_id
+    course = get_object_or_404(Course, id=course_id)
+    
+    # Fetch quizzes related to the course
+    quizzes = Quiz.objects.filter(course=course)
+
+    context = {
+        'course': course,
+        'quizzes': quizzes
+    }
+    
+    return render(request, 'main/quizzes/course_quiz_list.html', context)

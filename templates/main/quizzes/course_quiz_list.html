@@ -1,0 +1,26 @@
+{% extends 'main_base.html' %}
+
+{% block content %}
+  <h1>Quizzes for {{ course.title }}</h1>
+
+  {% if quizzes %}
+    <ul>
+      {% for quiz in quizzes %}
+        <li>
+          <a href="{% url 'quiz_detail' quiz.id %}">{{ quiz.title }}</a>
+          <p>{{ quiz.description }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No quizzes found for this course. <a href="">(Create a new quiz)</a></p>
+  {% endif %}
+    {% if user == course.owner %}
+        <p>Admin Menu:</p>
+        <ul>
+        <li><a href="">Create Quiz</a></li>
+        </ul>
+    {% else %}
+        <p>Menu: </p>
+    {% endif %}
+{% endblock %}

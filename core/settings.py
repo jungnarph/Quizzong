@@ -55,7 +55,11 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
 
     'courses',
+
+    'taggit',
 ]
+
+TAGGIT_TAG_MODEL = 'courses.SluggedTag'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
