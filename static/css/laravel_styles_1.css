@@ -300,9 +300,9 @@
     border-bottom-right-radius: 10px;
   }
   
-  .card, .list-group a{
-    background-color:#851558;
-    color: var(--text-clr);
+  .card, .list-group a {
+      background-color: var(--line-clr); /* Applying a neutral color from the theme */
+      color: var(--text-clr); /* Text color from the theme */
   }
   
   /* Media Queries */

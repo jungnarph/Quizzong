@@ -42,13 +42,12 @@ class QuizForm(forms.ModelForm):
 
 class QuestionForm(forms.ModelForm):
     tags = TagField(required=True, widget=forms.TextInput(attrs={
-        'class': 'tagify',  # This is what Tagify targets
         'placeholder': 'Add tags (comma-separated)'
     }))
 
     class Meta:
         model = Question
-        fields = ['type', 'text', 'points', 'order', 'correct_answer']
+        fields = ['type', 'text', 'points', 'order', 'correct_answer', 'tags']
 
         widgets = {
             'type': forms.Select(attrs={'class': 'form-select'}),

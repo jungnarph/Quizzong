@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Course, CourseEnrollment, CourseInvitation
+from .models import Quiz, Question, Option
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
@@ -37,3 +38,15 @@ class CourseInvitationAdmin(admin.ModelAdmin):
         return obj.is_valid()
 
     is_valid.boolean = True
+
+@admin.register(Quiz)
+class QuizAdmin(admin.ModelAdmin):
+    # Use the ManyToManyField widget automatically
+    filter_horizontal = ('questions',)  # Optional: adds a filter widget
+    list_display = ('title',)  # List the quiz title in the admin list
+
+# Register the Question model if needed
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('text',)
+

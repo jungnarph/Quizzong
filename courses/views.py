@@ -195,8 +195,9 @@ def create_quiz(request, course_id):
             question.course_id = course_id
             question.owner = request.user
             question.save()
+            question_form.save_m2m()
             quiz.questions.add(question)  # <-- This links the question to the quiz
             
-        return redirect(quiz.get_absolute_url())
+        return redirect('course_quiz_list', course_id=course_id)
 
     return render(request, 'main/quizzes/create_update_quiz.html', context)

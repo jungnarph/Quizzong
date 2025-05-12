@@ -104,19 +104,9 @@
   </form>
 {% endblock %}
 
-{% block external_links %}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
-  <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
-{% endblock %}
-
 {% block scripts %}
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const input = document.querySelector('input.tagify');
-      if (input) {
-        new Tagify(input);
-      }
-
       const addQuestionBtn = document.getElementById('add-question-btn');
       const totalNewForms = document.getElementById('id_form-TOTAL_FORMS');
 
@@ -152,11 +142,6 @@
 
         formTarget.append(cardDiv);
         totalNewForms.setAttribute('value', totalQuestionForms + 1);
-
-        const newInput = cardDiv.querySelector('input.tagify');
-        if (newInput) {
-          new Tagify(newInput);
-        }
       }
 
     });
