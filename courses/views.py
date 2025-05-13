@@ -78,7 +78,7 @@ def get_course_invitation(request, course_id):
     course = get_object_or_404(Course, id=course_id)
 
     if request.user != course.owner:
-        messages.error(request, "You are not authorized to invite users to this course.")
+        messages.error(request, "Unauthorized access.")
         return redirect('course_detail', course_id=course.id)
 
     # Check for an existing unexpired invitation
@@ -135,6 +135,9 @@ def join_course_via_invitation(request, course_id, invitation_code):
 
 @login_required
 def edit_course(request, course_id):
+    if request.user != course.owner:
+        messages.error(request, "Unauthorized access.")
+        return redirect('course_detail', course_id=course.id)
     course = get_object_or_404(Course, id=course_id)
 
     if request.user != course.owner:
@@ -174,6 +177,9 @@ def course_quiz_list(request, course_id):
 
 @login_required
 def create_quiz(request, course_id):
+    if request.user != course.owner:
+        messages.error(request, "Unauthorized access.")
+        return redirect('course_detail', course_id=course.id)
     course = get_object_or_404(Course, pk=course_id)
     quiz_form = QuizForm(request.POST or None, course=course)
     context = {
@@ -191,6 +197,7 @@ def create_quiz(request, course_id):
 
 @login_required
 def quiz_detail(request, course_id, quiz_id):
+    
     course = get_object_or_404(Course, id=course_id)
     quiz = get_object_or_404(Quiz, id=quiz_id)
     context = {
@@ -205,9 +212,11 @@ def update_quiz(request, course_id, quiz_id):
 
 @login_required
 def create_question(request, quiz_id=None, course_id=None):
+    if request.user != course.owner:
+        messages.error(request, "Unauthorized access.")
+        return redirect('course_detail', course_id=course.id)
     quiz = Quiz.objects.filter(pk=quiz_id).first() if quiz_id else None
     course = Course.objects.filter(pk=course_id).first() if course_id else None
-    print(f"Quiz: {quiz}, Course: {course}")
 
     if request.method == 'POST':
         form = QuestionForm(request.POST)
@@ -249,6 +258,9 @@ def create_question(request, quiz_id=None, course_id=None):
 
 @login_required
 def import_questions(request, course_id, quiz_id):
+    if request.user != course.owner:
+        messages.error(request, "Unauthorized access.")
+        return redirect('course_detail', course_id=course.id)
     course = get_object_or_404(Course, id=course_id)
     quiz = get_object_or_404(Quiz, id=quiz_id, course=course)
 
@@ -274,6 +286,9 @@ def import_questions(request, course_id, quiz_id):
 
 @login_required
 def question_list(request, course_id):
+    if request.user != course.owner:
+        messages.error(request, "Unauthorized access.")
+        return redirect('course_detail', course_id=course.id)
     course = get_object_or_404(Course, id=course_id)
     questions = Question.objects.filter(course=course)
 
