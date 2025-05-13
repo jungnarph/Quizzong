@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.github',
 
     'courses',
+    'inbox',
 
     'taggit',
 ]
@@ -107,8 +108,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'quizzong',
+        'USER': 'postgres',
+        'PASSWORD': '123',
+        'HOST': 'localhost',  # Or your DB host
+        'PORT': '5432',       # Default PostgreSQL port
     }
 }
 

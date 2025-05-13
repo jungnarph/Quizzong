@@ -1,0 +1,18 @@
+{% extends 'main_base.html' %}
+
+{% block content %}
+<h1>Message from {{ message.sender }}</h1>
+<p><strong>Subject:</strong> {{ message.subject }}</p>
+<p><strong>Content:</strong> {{ message.body }}</p>
+
+{% if not message.read_at %}
+    <p><em>This message is unread.</em></p>
+{% endif %}
+
+<form action="{% url 'inbox:delete_message' message.id %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="button">Delete Message</button>
+</form>
+
+<a href="{% url 'inbox:inbox' %}" class="button">Back to Inbox</a>
+{% endblock %}
