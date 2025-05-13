@@ -12,4 +12,13 @@ urlpatterns = [
 
     path('<int:course_id>/quizzes/', views.course_quiz_list, name='course_quiz_list'),
     path('<int:course_id>/quizzes/create/', views.create_quiz, name='create_quiz'),
+    path('<int:course_id>/quizzes/<int:quiz_id>/', views.quiz_detail, name='quiz_detail'),
+    path('<int:course_id>/quizzes/<int:quiz_id>/edit/', views.update_quiz, name='update_quiz'),
+
+    path('<int:course_id>/quizzes/<int:quiz_id>/questions/create/', views.create_question, name='quiz_create_question'),
+    path('<int:course_id>/quizzes/<int:quiz_id>/questions/import/', views.import_question, name='quiz_import_question'),
+
+    path('<int:course_id>/questions/create/', views.create_question, name='create_question'),
+
+    path('secret/', views.show_option_list, name='show_option_list'),
 ]

@@ -1,0 +1,24 @@
+{% extends 'main_base.html' %}
+{% block title %}Quiz Detail{% endblock %}
+
+{% block content %}
+<h2>{{ quiz.title }}</h2>
+<p>{{ quiz.description }}</p>
+
+<a href="{% url 'quiz_create_question' course.id quiz.id %}" class="btn btn-primary">Create Question</a>
+<a href="{% url 'quiz_import_question' course.id quiz.id %}" class="btn btn-secondary">Import Question</a>
+
+<hr>
+
+<h3>Questions</h3>
+{% for question in quiz.questions.all %}
+  <div class="card my-2">
+    <div class="card-body">
+      {{ question.text }}
+      <!-- Optionally: Edit / Delete buttons -->
+    </div>
+  </div>
+{% empty %}
+  <p>No questions added yet.</p>
+{% endfor %}
+{% endblock %}

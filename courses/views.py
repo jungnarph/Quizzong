@@ -176,28 +176,81 @@ def course_quiz_list(request, course_id):
 def create_quiz(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     quiz_form = QuizForm(request.POST or None, course=course)
-    QuestionFormset = modelformset_factory(Question, form=QuestionForm, extra=1)
-    qs = Question.objects.none()
-    question_formset = QuestionFormset(request.POST or None, queryset = qs)
     context = {
         "quiz_form": quiz_form,
-        "question_formset": question_formset,
     }
-    if all([quiz_form.is_valid(), question_formset.is_valid()]):
+    if quiz_form.is_valid():
         quiz = quiz_form.save(commit=False)
         quiz.course_id = course_id
         quiz.save()
         quiz_form.save_m2m()  # Just in case other M2M fields exist
-
-        # Save questions and add to quiz
-        for question_form in question_formset:
-            question = question_form.save(commit=False)
-            question.course_id = course_id
-            question.owner = request.user
-            question.save()
-            question_form.save_m2m()
-            quiz.questions.add(question)  # <-- This links the question to the quiz
             
-        return redirect('course_quiz_list', course_id=course_id)
+        return redirect('quiz_detail', course_id=course_id, quiz_id=quiz.id)
 
     return render(request, 'main/quizzes/create_update_quiz.html', context)
+
+@login_required
+def quiz_detail(request, course_id, quiz_id):
+    course = get_object_or_404(Course, id=course_id)
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    context = {
+        'course': course,
+        'quiz': quiz,
+    }
+    return render(request, 'main/quizzes/quiz_detail.html', context)
+
+@login_required
+def update_quiz(request, course_id, quiz_id):
+    pass
+
+@login_required
+def create_question(request, quiz_id=None, course_id=None):
+    quiz = Quiz.objects.filter(pk=quiz_id).first() if quiz_id else None
+    course = Course.objects.filter(pk=course_id).first() if course_id else None
+    print(f"Quiz: {quiz}, Course: {course}")
+
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.owner = request.user
+            question.course = course
+            print(f"Quiz added to course {course}")
+            question.save()
+
+            if quiz:
+                question.quizzes.add(quiz)
+            
+            form.save_m2m()  # for tags
+
+            if question.type == 'choice':
+                correct_index = request.POST.get('correct_option')
+                options = []
+                for i in range(5):  # max 5 options
+                    text = request.POST.get(f'option_text_{i}')
+                    if text:
+                        options.append(Option(
+                            question=question,
+                            text=text,
+                            is_correct=(str(i) == correct_index)
+                        ))
+                Option.objects.bulk_create(options)
+
+            return redirect('quiz_detail', quiz_id=quiz.pk, course_id=course.pk) if quiz else redirect('course_detail', course_id=course.pk)
+
+    else:
+        form = QuestionForm()
+
+    return render(request, 'main/questions/create_question.html', {
+        'form': form,
+        'quiz': quiz,
+        'course': course
+    })
+
+@login_required
+def import_question(request, course_id, quiz_id):
+    pass
+
+@login_required
+def show_option_list(request):
+    return render(request, 'main/quizzes/secret.html')

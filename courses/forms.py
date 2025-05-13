@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import inlineformset_factory
 from .models import Course
 from .models import Quiz, Question, Option
 from taggit.forms import TagField
@@ -51,7 +52,8 @@ class QuestionForm(forms.ModelForm):
 
         widgets = {
             'type': forms.Select(attrs={'class': 'form-select'}),
-            'correct_answer': forms.Textarea(attrs={'rows': 2}),
+            'text': forms.Textarea(attrs={'rows': 3}),
+            'correct_answer': forms.Textarea(attrs={'rows': 1}),
         }
 
     def clean_tags(self):
@@ -64,3 +66,9 @@ class OptionForm(forms.ModelForm):
     class Meta:
         model = Option
         fields = ['text', 'is_correct']
+
+OptionFormSet = inlineformset_factory(
+    Question, Option, form=OptionForm,
+    extra=2, min_num=1, validate_min=True, can_delete=True
+)
+

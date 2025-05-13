@@ -7,7 +7,7 @@
     <ul>
       {% for quiz in quizzes %}
         <li>
-          <a href="">{{ quiz.title }}</a>
+          <a href="{% url 'quiz_detail' course.id quiz.id %}">{{ quiz.title }}</a>
           <p>{{ quiz.description }}</p>
         </li>
       {% endfor %}

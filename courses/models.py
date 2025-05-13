@@ -106,18 +106,19 @@ class Question(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def clean(self):
-        if self.type in [self.CHOICE]:
-            correct_options = self.options.filter(is_correct=True).count()
+        if self.pk:
+            if self.type in [self.CHOICE]:
+                correct_options = self.options.filter(is_correct=True).count()
 
-            if correct_options == 0:
-                raise ValidationError("Multiple Choice questions must have at least one correct option.")
+                if correct_options == 0:
+                    raise ValidationError("Multiple Choice questions must have at least one correct option.")
 
-            if self.type == self.CHOICE and correct_options > 1:
-                raise ValidationError("Single-answer MCQs must have only one correct option.")
+                if self.type == self.CHOICE and correct_options > 1:
+                    raise ValidationError("Single-answer MCQs must have only one correct option.")
 
-        elif self.type in [self.SHORT]:
-            if not self.correct_answer:
-                raise ValidationError("Short answer questions must have a correct_answer.")
+            elif self.type in [self.SHORT]:
+                if not self.correct_answer:
+                    raise ValidationError("Short answer questions must have a correct_answer.")
 
     def get_all_quiz_questions(self):
         return self.quiz.questions.all()

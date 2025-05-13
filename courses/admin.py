@@ -45,8 +45,12 @@ class QuizAdmin(admin.ModelAdmin):
     filter_horizontal = ('questions',)  # Optional: adds a filter widget
     list_display = ('title',)  # List the quiz title in the admin list
 
-# Register the Question model if needed
+# Register the Question model with an inline for options
+class OptionInline(admin.TabularInline):
+    model = Option
+    extra = 3  # Allows adding 3 extra options by default
+
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('text',)
-
+    list_display = ('text', 'type')  # Display question text and type
+    inlines = [OptionInline]  # Include options as an inline in the question form

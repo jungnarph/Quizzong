@@ -1,0 +1,149 @@
+{% extends 'main_base.html' %}
+
+{% block title %}Create/Edit Quiz{% endblock %}
+
+{% block content %}
+  <div class="header">
+    {% if not quiz %}
+      <h2 class="my-0">Create Quiz</h2>
+    {% else %}
+      <h2>Edit Quiz: {{ quiz.title }}</h2>
+    {% endif %}
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    {% if quiz_form.errors %}
+      <div class="alert alert-danger">
+        {{ quiz_form.errors }}
+      </div>
+    {% endif %}
+
+    {% if question_formset.non_form_errors %}
+      <div class="alert alert-danger">
+        {{ question_formset.non_form_errors }}
+      </div>
+    {% endif %}
+
+    {% if message %}
+      <div class="alert alert-success">
+        {{ message }}
+      </div>
+    {% endif %}
+
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="course-card">
+            <label for="course">Course:</label>
+            {{ quiz_form.course }}
+
+            <p></p>
+            <label for="title">Title:</label>
+            {{ quiz_form.title }}
+
+            <label for="description">Description / Instruction:</label>
+            {{ quiz_form.description }}
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="course-card">
+            <label for="{{ quiz_form.available_from.id_for_label }}">Available From:</label>
+            {{ quiz_form.available_from }}
+
+            <label for="{{ quiz_form.available_until.id_for_label }}">Available Until:</label>
+            {{ quiz_form.available_until }}
+
+            <label for="{{ quiz_form.due_date.id_for_label }}">Due Date:</label>
+            {{ quiz_form.due_date }}
+
+            <label for="{{ quiz_form.time_limit.id_for_label }}">Time Limit:</label>
+            {{ quiz_form.time_limit }}
+          </div>
+        </div>
+      </div>
+
+      {% if question_formset %}
+        <h2>Questions</h2>
+        <div class="dashed"></div>
+
+        <div id="question-form-list">
+          {{ question_formset.management_form }}
+          {% for question_form in question_formset %}
+            <div class="card question-form my-3">
+              <div class="card-header">
+                <h4 class="mb-0">Question {{ forloop.counter }}</h4>
+              </div>
+              <div class="card-body">
+                {{ question_form.as_p }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div id="empty-question-form" class="hidden">
+          {{ question_formset.empty_form }}
+        </div>
+      {% endif %}
+
+      <div class="dashed mt-4"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6"></div>
+          <div class="col-md-6 d-flex flex-column justify-content-end" style="height: 100%; padding-bottom: 10px;">
+            <div class="d-flex justify-content-end mt-2">
+              <button id="add-question-btn" class="add-question-btn" type="button">Add Question</button>
+              <button type="submit" class="submit-btn">Save Quiz</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const addQuestionBtn = document.getElementById('add-question-btn');
+      const totalNewForms = document.getElementById('id_form-TOTAL_FORMS');
+
+      addQuestionBtn.addEventListener('click', addQuestion);
+
+      function addQuestion() {
+        event.preventDefault();
+
+        const currentQuestionForms = document.getElementsByClassName('question-form');
+        const totalQuestionForms = currentQuestionForms.length;
+
+        const formTarget = document.getElementById('question-form-list');
+        const emptyFormDiv = document.getElementById('empty-question-form');
+        const copyEmpQuestionForm = emptyFormDiv.cloneNode(true);
+
+        let formHTML = copyEmpQuestionForm.innerHTML;
+        const regex = new RegExp('__prefix__', 'g');
+        formHTML = formHTML.replace(regex, totalQuestionForms);
+
+        // Create a card container and apply class/id
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card question-form my-3';
+        cardDiv.id = `form-${totalQuestionForms}`;
+
+        cardDiv.innerHTML = `
+          <div class="card-header">
+            <h4 class="mb-0">Question ${totalQuestionForms + 1}</h4>
+          </div>
+          <div class="card-body">
+            ${formHTML}
+          </div>
+        `;
+
+        formTarget.append(cardDiv);
+        totalNewForms.setAttribute('value', totalQuestionForms + 1);
+      }
+
+    });
+  </script>
+{% endblock %}
