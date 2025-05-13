@@ -34,6 +34,7 @@
 {% if user == course.owner %}
 <p>Admin Menu:</p>
 <ul>
+  <li><a href="{% url 'question_list' course.id %}">Question List</a></li>
   <li><a href="{% url 'course_quiz_list' course.id %}">Quiz List</a></li>
   <li><a href="{% url 'get_course_invitation' course.id %}">Share</a></li>
   <li><a href="{% url 'edit_course' course.id %}">Edit Course</a></li>

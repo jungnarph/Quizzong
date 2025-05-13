@@ -248,9 +248,38 @@ def create_question(request, quiz_id=None, course_id=None):
     })
 
 @login_required
-def import_question(request, course_id, quiz_id):
-    pass
+def import_questions(request, course_id, quiz_id):
+    course = get_object_or_404(Course, id=course_id)
+    quiz = get_object_or_404(Quiz, id=quiz_id, course=course)
+
+    # Get all questions for this course not already in the quiz
+    available_questions = Question.objects.filter(
+        course=course
+    ).exclude(
+        quizzes=quiz
+    )
+
+    if request.method == 'POST':
+        selected_ids = request.POST.getlist('question_ids')
+        questions_to_add = Question.objects.filter(id__in=selected_ids)
+        quiz.questions.add(*questions_to_add)
+        return redirect('quiz_detail', course_id=course.id, quiz_id=quiz.id)
+
+    context = {
+        'course': course,
+        'quiz': quiz,
+        'available_questions': available_questions,
+    }
+    return render(request, 'main/questions/import_questions.html', context)
 
 @login_required
-def show_option_list(request):
-    return render(request, 'main/quizzes/secret.html')
+def question_list(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    questions = Question.objects.filter(course=course)
+
+    context = {
+        'course': course,
+        'questions': questions
+    }
+
+    return render(request, 'main/questions/question_list.html', context)

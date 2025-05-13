@@ -1,0 +1,35 @@
+{% extends 'main_base.html' %}
+
+{% block title %}Create Question{% endblock %}
+
+{% block content %}
+<h2>Questions in {{ course.title }}</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Question</th>
+            <th>Type</th>
+            <th>Tags</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for question in questions %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ question.text }}</td>
+            <td>{{ question.get_type_display }}</td>
+            <td>
+                {% for tag in question.tags.all %}
+                    <span class="badge bg-info text-dark">{{ tag.name }}</span>
+                {% endfor %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No questions available.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
