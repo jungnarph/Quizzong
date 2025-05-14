@@ -111,8 +111,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'quizzong',
-        'USER': 'postgres',
-        'PASSWORD': '123',
+        'USER': os.getenv('POSTGRES_USER'),  # Use environment variable for security
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),  # Use environment variable for security
         'HOST': 'localhost',  # Or your DB host
         'PORT': '5432',       # Default PostgreSQL port
     }
