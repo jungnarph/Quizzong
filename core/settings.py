@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'inbox',
 
     'taggit',
+    'widget_tweaks',
 ]
 
 
@@ -73,7 +74,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/accounts/login'
 
 TEMPLATES = [
