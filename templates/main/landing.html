@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Quizzong{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1 class="text-left text-dark" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); font-size: 80px;">Quizzong</h1>
+            <p class="text-left" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); color: #4a444a;">
+                Welcome to Quizzong – the gamified learning management system where education meets excitement. Whether you're a student aiming
+                to master new skills or an educator looking to inspire, Quizzong transforms everyday quizzes into epic challenges.
+                Start your journey, earn your badges, and make learning an adventure.
+            </p>
+            <div class="d-flex">
+                <button class="me-3" style="border-radius: 10px;">Try it out</button>
+                <button style="border-radius: 10px;">Watch Video</button>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/Landing-img.png' %}" class="img-fluid" alt="Landing Image" style="margin-left: 2rem;">
+        </div>
+    </div>
+</div>
+{% endblock %}

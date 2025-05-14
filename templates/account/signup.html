@@ -1,45 +1,138 @@
-{% extends "account/base_entrance.html" %}
-{% load allauth i18n %}
-{% block head_title %}
-    {% trans "Signup" %}
-{% endblock head_title %}
+{% extends 'Authbase.html' %}
+{% load static %}
+{% load static socialaccount %}
+
 {% block content %}
-    {% element h1 %}
-        {% trans "Sign Up" %}
-    {% endelement %}
-    {% setvar link %}
-        <a href="{{ login_url }}">
-        {% endsetvar %}
-        {% setvar end_link %}
-        </a>
-    {% endsetvar %}
-    {% element p %}
-        {% blocktranslate %}Already have an account? Then please {{ link }}sign in{{ end_link }}.{% endblocktranslate %}
-    {% endelement %}
-    {% if not SOCIALACCOUNT_ONLY %}
-        {% url 'account_signup' as action_url %}
-        {% element form form=form method="post" action=action_url tags="entrance,signup" %}
-            {% slot body %}
+<style>
+    .register-container {
+        margin: 5vh auto;
+        max-width: 900px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .register-left {
+        background-color: #4a444a;
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .register-left h1 {
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    .register-left p {
+        font-size: 1rem;
+        color: #f0eaea;
+        margin-top: 20px;
+    }
+
+    .register-right {
+        background-color: #fff6e5;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .register-right h2 {
+        font-weight: bold;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .register-right input {
+        border: none;
+        border-radius: 10px;
+        padding: 12px 20px;
+        background-color: white;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .register-btn {
+        background-color: #4a444a;
+        color: #fff6e5;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        width: 100%;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .register-btn:hover {
+        background-color: orange;
+        transform: scale(1.03);
+    }
+
+    .login-redirect {
+        text-align: center;
+        margin-top: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .register-left, .register-right {
+            padding: 30px 20px;
+        }
+
+        .register-left {
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="container register-container">
+    <div class="row g-0">
+        <div class="col-md-5 register-left d-flex flex-column justify-content-center">
+            <h1>Welcome!</h1>
+            <p>Create your Quizzong account and start your journey of gamified learning!</p>
+            {% if SOCIALACCOUNT_ENABLED %}
+                <a href="{% provider_login_url 'github' %}" class="social-btn">
+                    <span>Signup with Github</span>
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="col-md-7 register-right">
+            <h2 class="mb-2">Create an Account</h2>
+            <p class="text-muted">Please fill in the form to register.</p>
+
+            <form method="POST" action="{% url 'account_signup' %}">
                 {% csrf_token %}
-                {% element fields form=form unlabeled=True %}
-                {% endelement %}
+
+                {% if form.non_field_errors %}
+                    <div class="text-danger mb-2">{{ form.non_field_errors.0 }}</div>
+                {% endif %}
+
+                <input type="text" name="username" placeholder="Username" value="{{ form.username.value|default_if_none:'' }}" required>
+                {% if form.username.errors %}
+                    <div class="text-danger">{{ form.username.errors.0 }}</div>
+                {% endif %}
+
+                <input type="email" name="email" placeholder="Email" value="{{ form.email.value|default_if_none:'' }}" required>
+                {% if form.email.errors %}
+                    <div class="text-danger">{{ form.email.errors.0 }}</div>
+                {% endif %}
+
+                <input type="password" name="password1" placeholder="Password" required>
+                {% if form.password1.errors %}
+                    <div class="text-danger">{{ form.password1.errors.0 }}</div>
+                {% endif %}
+
+                <input type="password" name="password2" placeholder="Confirm Password" required>
+                {% if form.password2.errors %}
+                    <div class="text-danger">{{ form.password2.errors.0 }}</div>
+                {% endif %}
+
                 {{ redirect_field }}
-            {% endslot %}
-            {% slot actions %}
-                {% element button tags="prominent,signup" type="submit" %}
-                    {% trans "Sign Up" %}
-                {% endelement %}
-            {% endslot %}
-        {% endelement %}
-    {% endif %}
-    {% if PASSKEY_SIGNUP_ENABLED %}
-        {% element hr %}
-        {% endelement %}
-        {% element button href=signup_by_passkey_url tags="prominent,signup,outline,primary" %}
-            {% trans "Sign up using a passkey" %}
-        {% endelement %}
-    {% endif %}
-    {% if SOCIALACCOUNT_ENABLED %}
-        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-    {% endif %}
-{% endblock content %}
+                <button type="submit" class="register-btn">Register</button>
+            </form>
+
+            <div class="login-redirect">
+                Already have an account? <a href="{% url 'account_login' %}">Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

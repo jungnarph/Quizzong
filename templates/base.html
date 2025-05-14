@@ -1,0 +1,89 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %}Quizzong{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light px-5">
+        <a class="navbar-brand" href="#">
+            <img src="{% static 'images/QuizzongLogo.png' %}" alt="LOGO.png" style="width: 150px; height: 100px; border-radius: 10px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav me-auto" style="font-size: larger;">
+            <li class="nav-item mx-2">
+              <a class="nav-link" href="#">FAQs</a>
+            </li>
+            <li class="nav-item mx-2">
+              <a class="nav-link" href="#">How it works</a>
+            </li>
+            <li class="nav-item mx-2">
+              <a class="nav-link" href="#">About us</a>
+            </li>
+            <li class="nav-item mx-2">
+              <a class="nav-link" href="#">Contact Us</a>
+            </li>
+          </ul>
+        
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="btn-style" href="{% url 'account_login' %}">Get started</a>
+            </li>
+          </ul>
+        </div>        
+    </nav>
+
+    <!-- Page Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center text-lg-start mt-5 border-top">
+        <div class="container p-4">
+            <div class="row">
+                <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
+                    <h5 class="text-uppercase" style="color: white;">Quizzong</h5>
+                    <p style="color: white;">Empowering students through immersive learning experiences. Join us and become a legend in your own story.</p>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase">Links</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="#" class="text-white">Home</a></li>
+                        <li><a href="#" class="text-white">Courses</a></li>
+                        <li><a href="#" class="text-white">About</a></li>
+                        <li><a href="#" class="text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase">Follow Us</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="#" class="text-white">Facebook</a></li>
+                        <li><a href="#" class="text-white">Twitter</a></li>
+                        <li><a href="#" class="text-white">Instagram</a></li>
+                        <li><a href="#" class="text-white">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2025 Quizzong — All rights reserved
+        </div>
+    </footer>
+
+    <script 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-kF1V35D7KX9G5sQQaUeFvJc+PlZquU7qLkFh63/OzSPwQRMv59U6K1b+QNf9IJYp" 
+        crossorigin="anonymous"
+    ></script>
+</body>
+</html>

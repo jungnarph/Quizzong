@@ -1,61 +1,174 @@
-{% extends "account/base_entrance.html" %}
-{% load i18n %}
-{% load allauth account %}
-{% block head_title %}
-    {% trans "Sign In" %}
-{% endblock head_title %}
+{% extends 'AuthBase.html' %}
+{% load static %}
+{% load static socialaccount %}
+
+{% block title %}Login - Quizzong{% endblock %}
+
 {% block content %}
-    {% element h1 %}
-        {% trans "Sign In" %}
-    {% endelement %}
-    {% if not SOCIALACCOUNT_ONLY %}
-        {% setvar link %}
-            <a href="{{ signup_url }}">
-            {% endsetvar %}
-            {% setvar end_link %}
-            </a>
-        {% endsetvar %}
-        {% element p %}
-            {% blocktranslate %}If you have not created an account yet, then please {{ link }}sign up{{ end_link }} first.{% endblocktranslate %}
-        {% endelement %}
-        {% url 'account_login' as login_url %}
-        {% element form form=form method="post" action=login_url tags="entrance,login" %}
-            {% slot body %}
+<style>
+    .login-container {
+        margin: 5vh auto;
+        max-width: 900px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .login-left {
+        background-color: #4a444a;
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .login-left h1 {
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    .login-left .social-btn {
+        background-color: #fff6e5;
+        border: none;
+        border-radius: 10px;
+        margin: 10px 0;
+        padding: 10px;
+        width: 100%;
+        display: flex;
+        align-items: center;  
+        font-weight: 500;
+        color: #4a444a;
+        justify-content: flex-start;  
+        text-decoration: none;
+        transition: ease-in-out 0.3s;
+    }
+
+    .social-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .login-left .social-btn span {
+        flex-grow: 1;
+        text-align: center;
+        display: block;
+        margin: 0;
+        padding: 0;
+    }
+
+    .login-left .social-btn img {
+        width: 20px;
+    }
+
+    .login-right {
+        background-color: #fff6e5;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .login-right h2 {
+        font-weight: bold;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-right input[type="text"],
+    .login-right input[type="password"] {
+        border: none;
+        border-radius: 10px;
+        padding: 12px 20px;
+        background-color: white;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        margin-top: 5px;
+        margin-right: 8px;
+    }
+
+    .login-btn {
+        background-color: #4a444a;
+        color: #fff6e5;
+        border: none;
+        border-radius: 10px;
+        padding: 12px;
+        width: 100%;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .login-btn:hover {
+        background-color: orange;
+        transform: scale(1.03);
+    }
+
+    @media (max-width: 768px) {
+        .login-left, .login-right {
+            padding: 30px 20px;
+        }
+
+        .login-left {
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="container login-container">
+    <div class="row g-0">
+        <!-- Left: Social Login -->
+        <div class="col-md-5 login-left d-flex flex-column justify-content-center">
+            <h1>Quizzong</h1>
+            <h5>Login with</h5>
+            {% if SOCIALACCOUNT_ENABLED %}
+                <a href="#" class="social-btn">
+                    <img src="{% static 'images/google-icon.png' %}" alt="G" width="20">
+                    <span>Google</span>
+                </a>
+                <a href="{% provider_login_url 'github' %}" class="social-btn">
+                    <img src="{% static 'images/github-icon.png' %}" alt="GitHub">
+                    <span>GitHub</span>
+                </a>
+                <a href="#" class="social-btn">
+                    <img src="{% static 'images/facebook-icon.png' %}" alt="Facebook" width="20">
+                    <span>Facebook</span>
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- Right: Login Form -->
+        <div class="col-md-7 login-right">
+            <h2 class="mb-2">Login to your Account</h2>
+            <p style="color: black;">Don’t have an account? <a href="{% url 'account_signup' %}" class="text-primary">Sign-up</a></p>
+
+            <!-- Login Form -->
+            <form method="POST" action="{% url 'account_login' %}">
                 {% csrf_token %}
-                {% element fields form=form unlabeled=True %}
-                {% endelement %}
-                {{ redirect_field }}
-            {% endslot %}
-            {% slot actions %}
-                {% element button type="submit" tags="prominent,login" %}
-                    {% trans "Sign In" %}
-                {% endelement %}
-            {% endslot %}
-        {% endelement %}
-    {% endif %}
-    {% if LOGIN_BY_CODE_ENABLED or PASSKEY_LOGIN_ENABLED %}
-        {% element hr %}
-        {% endelement %}
-        {% element button_group vertical=True %}
-            {% if PASSKEY_LOGIN_ENABLED %}
-                {% element button type="submit" form="mfa_login" id="passkey_login" tags="prominent,login,outline,primary" %}
-                    {% trans "Sign in with a passkey" %}
-                {% endelement %}
-            {% endif %}
-            {% if LOGIN_BY_CODE_ENABLED %}
-                {% element button href=request_login_code_url tags="prominent,login,outline,primary" %}
-                    {% trans "Send me a sign-in code" %}
-                {% endelement %}
-            {% endif %}
-        {% endelement %}
-    {% endif %}
-    {% if SOCIALACCOUNT_ENABLED %}
-        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-    {% endif %}
-{% endblock content %}
-{% block extra_body %}
-    {{ block.super }}
-    {% if PASSKEY_LOGIN_ENABLED %}
-        {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
-    {% endif %}
+                
+                {% if form.errors %}
+                    <div class="text-danger mb-2">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <input type="text" name="login" placeholder="Username or Email" value="{{ form.login.value }}" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check d-flex align-items-center">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember" {% if form.remember.checked %}checked{% endif %}>
+                        <label class="form-check-label" for="remember">remember me</label>
+                    </div>
+                    <a href="{% url 'account_reset_password' %}" class="text-primary">Forgot Password</a>
+                </div>
+                
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

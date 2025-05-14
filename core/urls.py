@@ -20,13 +20,18 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 @login_required
-def home(request):
+def dashboard(request):
     return render(request, 'main/dashboard.html')
 
+def landing(request):
+    return render(request, 'main/landing.html')
+
 urlpatterns = [
-    path('', home, name='home'),
+    path('', landing, name='landing'),
+    path('dashboard/', dashboard, name='dashboard'),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
+    path('social/', include('allauth.socialaccount.urls')),  # This line includes the socialaccount URLs
     path('courses/', include('courses.urls')),
     path('inbox/', include('inbox.urls')),
 ]
