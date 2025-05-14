@@ -1,10 +1,10 @@
 {% extends 'main_base.html' %}
 
 {% block content %}
-<h1>Your Inbox</h1>
+<h1>Sent Messages</h1>
 
 <p>
-    <a href="{% url 'inbox:sent_messages' %}" class="button">View Sent Messages</a> |
+    <a href="{% url 'inbox:inbox' %}" class="button">Back to Inbox</a> |
     <a href="{% url 'inbox:compose' %}" class="button">Compose New Message</a>
 </p>
 
@@ -13,10 +13,7 @@
         {% for message in messages %}
             <li>
                 <a href="{% url 'inbox:message_detail' message.id %}">
-                    {{ message.sender }} - {{ message.content|truncatewords:10 }} 
-                    {% if not message.read_at %}
-                        <span>(Unread)</span>
-                    {% endif %}
+                    To: {{ message.recipient }} — {{ message.content|truncatewords:10 }}
                 </a>
                 <form action="{% url 'inbox:delete_message' message.id %}" method="POST" style="display:inline;">
                     {% csrf_token %}
@@ -26,6 +23,6 @@
         {% endfor %}
     </ul>
 {% else %}
-    <p>No messages</p>
+    <p>No sent messages.</p>
 {% endif %}
 {% endblock %}
