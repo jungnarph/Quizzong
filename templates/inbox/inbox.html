@@ -1,0 +1,28 @@
+{% extends 'main_base.html' %}
+
+{% block content %}
+<h1>Your Inbox</h1>
+
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>
+                <a href="{% url 'inbox:message_detail' message.id %}">
+                    {{ message.sender }} - {{ message.content|truncatewords:10 }} 
+                    {% if not message.read_at %}
+                        <span>(Unread)</span>
+                    {% endif %}
+                </a>
+                <form action="{% url 'inbox:delete_message' message.id %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="button">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No messages</p>
+{% endif %}
+
+<a href="{% url 'inbox:compose' %}" class="button">Compose New Message</a>
+{% endblock %}
