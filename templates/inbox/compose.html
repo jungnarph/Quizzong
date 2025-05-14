@@ -2,9 +2,41 @@
 
 {% block content %}
 <h1>Compose a New Message</h1>
-<form method="POST">
+<form method="POST" id="composeForm">
     {% csrf_token %}
-    {{ form.as_p }}
+    <p>
+        <label for="{{ form.course.id_for_label }}">Select Course:</label><br>
+        {{ form.course }}
+    </p>
+    <p>
+        <label for="{{ form.recipient.id_for_label }}">Select Recipient:</label><br>
+        <select name="recipient" id="id_recipient">
+            <option value="">---------</option>
+        </select>
+    </p>
+    {{ form.subject.label_tag }} {{ form.subject }}<br>
+    {{ form.body.label_tag }}<br> {{ form.body }}<br><br>
     <button type="submit">Send</button>
 </form>
+
+<script>
+    document.getElementById('id_course').addEventListener('change', function() {
+        var courseId = this.value;
+        var recipientSelect = document.getElementById('id_recipient');
+
+        recipientSelect.innerHTML = '<option value="">Loading...</option>';
+
+        fetch(`/inbox/load-recipients/?course_id=${courseId}`)
+            .then(response => response.json())
+            .then(data => {
+                recipientSelect.innerHTML = '<option value="">---------</option>';
+                data.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.id;
+                    option.textContent = user.username;
+                    recipientSelect.appendChild(option);
+                });
+            });
+    });
+</script>
 {% endblock %}
