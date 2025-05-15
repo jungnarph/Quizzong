@@ -1,26 +1,105 @@
 {% extends 'main_base.html' %}
 
 {% block content %}
-<h1>Compose a New Message</h1>
-<form method="POST" id="composeForm">
-    {% csrf_token %}
-    <p>
-        <label for="{{ form.course.id_for_label }}">Select Course:</label><br>
-        {{ form.course }}
-    </p>
-    <p>
-        <label for="{{ form.recipient.id_for_label }}">Select Recipient:</label><br>
-        <select name="recipient" id="id_recipient">
-            <option value="">---------</option>
-        </select>
-    </p>
-    {{ form.subject.label_tag }} {{ form.subject }}<br>
-    {{ form.body.label_tag }}<br> {{ form.body }}<br><br>
-    <button type="submit">Send</button>
-</form>
+<style>
+    .compose-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #4a444a;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .compose-container h2 {
+        text-align: center;
+        color: white;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+        color: white;
+    }
+
+    .form-group select,
+    .form-group input[type="text"],
+    .form-group textarea {
+        width: 100%;
+        padding: 0.6rem 0.8rem;
+        border: 1px solid #fff6e5;
+        border-radius: 6px;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+
+    textarea {
+        height: 150px;
+        resize: vertical;
+    }
+
+    .send-button {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: #ff7a00;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .send-button:hover {
+        background-color: #e76f00;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+
+<div class="compose-container">
+    <h2>📨 Compose a Message</h2>
+
+    <form method="POST" id="composeForm">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.course.id_for_label }}">Select Course</label>
+            {{ form.course }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_recipient">Select Recipient</label>
+            <select name="recipient" id="id_recipient">
+                <option value="">---------</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.subject.id_for_label }}">Subject</label>
+            {{ form.subject }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.body.id_for_label }}">Message</label>
+            {{ form.body }}
+        </div>
+
+        <button type="submit" class="send-button">Send</button>
+        <a href="{% url 'inbox:inbox' %}" class="send-button">Back</a>
+    </form>
+</div>
 
 <script>
-    document.getElementById('id_course').addEventListener('change', function() {
+    document.getElementById('id_course').addEventListener('change', function () {
         var courseId = this.value;
         var recipientSelect = document.getElementById('id_recipient');
 

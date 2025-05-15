@@ -1,31 +1,184 @@
 {% extends 'main_base.html' %}
 
 {% block content %}
+<style>
+    body {
+        color: #4a444a;
+    }
+    .inbox-container {
+        display: flex;
+        height: 80vh;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    }
+    .message-list {
+        width: 30%;
+        background-color: #4a444a;
+        overflow-y: auto;
+        color: white;
+    }
+    .message-item {
+        padding: 15px;
+        border-bottom: 1px solid #5c5c5c;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    .message-item:hover {
+        background-color: #5a545a;
+    }
+    .message-item.unread {
+        font-weight: bold;
+    }
+    .message-detail {
+        width: 70%;
+        padding: 20px;
+        overflow-y: auto;
+    }
+    .message-detail h2 {
+        margin-top: 0;
+    }
+    .btn {
+        padding: 8px 14px;
+        background-color: orange;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .btn:hover{
+        background-color: orange;
+    }
+    .dropdown {
+        display: inline-block;
+        position: relative;
+        margin-bottom: 10px;
+    }
+    .dropdown select {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-weight: bold;
+        background-color: orange;
+        color: white;
+        cursor: pointer;
+    }
+    .delete-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+    transition: color 0.2s ease;
+    }
+
+    .delete-btn:hover {
+        color: red;
+    }
+</style>
+
 <h1>Your Inbox</h1>
 
-{% if messages %}
-    <ul>
-        {% for message in messages %}
-            <li>
-                <a href="{% url 'inbox:message_detail' message.id %}">{{ message.sender }} - {{ message.content|truncatewords:10 }}
-                    {% if not message.read_at %}
-                        <span>(Unread)</span>
-                    {% endif %}
-                </a>
-                {% if message.sender == "admin" %}
-                    <span class="warning">(Message blocked due to profanity)</span>
-                {% endif %}
-                <form action="{% url 'inbox:delete_message' message.id %}" method="POST" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="button">Delete</button>
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No messages</p>
-{% endif %}
+<div class="dropdown">
+    <select id="filterSelect">
+        <option value="all">All Messages</option>
+        <option value="sent">Sent Messages</option>
+        <option value="unread">Unread Messages</option>
+    </select>
+</div>
+<a href="{% url 'inbox:compose' %}" class="btn">Compose New Message</a>
 
+<div class="inbox-container">
+    <!-- Left: Message List -->
+    <div class="message-list" id="messageList">
+        {% include 'inbox/message_list_partial.html' with messages=messages %}
+    </div>
 
-<a href="{% url 'inbox:compose' %}" class="button">Compose New Message</a>
+    <!-- Right: Message Detail -->
+    <div class="message-detail" id="messageDetail">
+        <p>Select a message from the left to view details here.</p>
+    </div>
+</div>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i=0; i<cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    function markAsRead(messageId, itemElement) {
+        fetch(`/inbox/mark-read/${messageId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                itemElement.classList.remove('unread');
+            }
+        });
+    }
+
+    function bindMessageClicks() {
+        const items = document.querySelectorAll('.message-item');
+        const detail = document.getElementById('messageDetail');
+
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                const messageId = item.getAttribute('data-id');
+
+                fetch(`/inbox/message/${messageId}/`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    detail.innerHTML = html;
+
+                    // Mark visually as read on client side
+                    item.classList.remove('unread');
+
+                    // Send POST to mark read in backend only if unread
+                    if (item.getAttribute('data-read') === '' || item.getAttribute('data-read') === 'None' || item.getAttribute('data-read') === null) {
+                        markAsRead(messageId, item);
+                        item.setAttribute('data-read', 'true');
+                    }
+                });
+            });
+        });
+    }
+
+    bindMessageClicks();
+
+    document.getElementById('filterSelect').addEventListener('change', function () {
+        const value = this.value;
+        fetch(`/inbox/filter/?type=${value}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('messageList').innerHTML = html;
+                bindMessageClicks();
+            });
+    });
+</script>
 {% endblock %}

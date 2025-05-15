@@ -1,0 +1,52 @@
+<style>
+  .message-item {
+    position: relative; /* to position the delete button inside */
+    padding: 10px 40px 10px 10px; /* extra right padding so text doesn’t overlap the button */
+    border-bottom: 1px solid #eee;
+  }
+  .btn-delete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #c0392b;
+    color: white;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 25%;
+    text-align: center;
+    text-decoration: none;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .btn-delete:hover {
+    background-color: #e74c3c;
+  }
+</style>
+
+{% for message in messages %}
+    <div class="message-item {% if not message.read_at %}unread{% endif %}"
+         data-id="{{ message.id }}"
+         data-read="{{ message.read_at|default:'' }}">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <strong>{{ message.sender.username }}</strong>
+            <small style="color: #999; font-size: 0.8em;">
+                {{ message.timestamp|date:"M d, Y H:i" }}
+            </small>
+        </div>
+        <div>
+            {{ message.body|truncatewords:10 }}
+            {% if not message.read_at %}
+                <span style="color: orange;">(Unread)</span>
+            {% endif %}
+        </div>
+        <a href="{% url 'inbox:delete_message' message.id %}"
+           class="btn-delete"
+           title="Delete message"
+           onclick="return confirm('Are you sure you want to delete this message?');">×</a>
+    </div>
+{% empty %}
+    <p style="padding: 10px; color: #ccc;">No messages found.</p>
+{% endfor %}

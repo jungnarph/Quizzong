@@ -1,28 +1,75 @@
 {% extends 'main_base.html' %}
 
 {% block content %}
-<h1>Sent Messages</h1>
+<style>
+    .message-card {
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        background-color: #fff;
+        transition: box-shadow 0.3s;
+    }
 
-<p>
-    <a href="{% url 'inbox:inbox' %}" class="button">Back to Inbox</a> |
-    <a href="{% url 'inbox:compose' %}" class="button">Compose New Message</a>
-</p>
+    .message-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 
-{% if messages %}
-    <ul>
+    .message-link {
+        font-weight: bold;
+        color: orange;
+        text-decoration: none;
+        font-size: 1.05em;
+    }
+
+    .button {
+        display: inline-block;
+        background: orange;
+        color: white;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 20px;
+        transition: background 0.3s;
+    }
+
+    .button:hover {
+        background: darkorange;
+    }
+
+    .delete-button {
+        background: #f44336;
+        margin-left: 10px;
+    }
+
+    form {
+        display: inline;
+    }
+</style>
+
+<div class="sent-container">
+    <h1>Sent Messages</h1>
+
+    {% if messages %}
         {% for message in messages %}
-            <li>
-                <a href="{% url 'inbox:message_detail' message.id %}">
-                    To: {{ message.recipient }} — {{ message.content|truncatewords:10 }}
+            <div class="message-card">
+                <strong>To:</strong> {{ message.recipient }}<br>
+                <a href="{% url 'inbox:message_detail' message.id %}" class="message-link">
+                    {{ message.subject }} – {{ message.body|truncatewords:10 }}
                 </a>
-                <form action="{% url 'inbox:delete_message' message.id %}" method="POST" style="display:inline;">
+                <form method="POST" action="{% url 'inbox:delete_message' message.id %}">
                     {% csrf_token %}
-                    <button type="submit" class="button">Delete</button>
+                    <button class="button delete-button">Delete</button>
                 </form>
-            </li>
+            </div>
         {% endfor %}
-    </ul>
-{% else %}
-    <p>No sent messages.</p>
-{% endif %}
+    {% else %}
+        <p>You haven't sent any messages.</p>
+    {% endif %}
+
+    <a href="{% url 'inbox:compose' %}" class="button">Compose New Message</a>
+    <a href="{% url 'inbox:inbox' %}" class="button">Back to Inbox</a>
+</div>
 {% endblock %}

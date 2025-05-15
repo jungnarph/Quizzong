@@ -1,0 +1,7 @@
+<h2>{{ message.subject}}</h2>
+<hr>
+<p>{{ message.sender.username }}</p>
+<p>{{ message.timestamp|date:"M d, Y H:i" }}</p>
+<hr>
+<p>{{ message.body|linebreaks }}</p>
+<a href="{% url 'inbox:delete_message' message.id %}" class="btn" style="background-color:#c0392b;" onclick="return confirm('Are you sure you want to delete this message?');">Delete</a>
