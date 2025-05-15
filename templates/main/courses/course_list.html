@@ -2,20 +2,28 @@
 {% block title %}Course List{% endblock %}
 
 {% block content %}
-<h1>Course List</h1>
-<a href="{% url 'create_course' %}">Create Course</a>
-<a href="">Join Course</a>
+<div class="course-list-page">
+  <h1 class="course-list-title">Course List</h1>
 
-<h2>My Courses</h2>
-<ul>
-  {% for course in courses %}
-  {% if course.owner == user %}
-  <li><a href="{{ course.get_absolute_url }}">{{ course.owner }} - {{ course.title }} (Owned)</a></li>
-  {% else %}
-  <li><a href="{{ course.get_absolute_url }}">{{ course.owner }} - {{ course.title }}</a></li>
-  {% endif %}
-  {% empty %}
-  <li>You are not enrolled in any courses.</li>
-  {% endfor %}
-</ul>
+  <div class="course-list-actions">
+    <a href="{% url 'create_course' %}" class="course-list-action-btn">Create Course</a>
+    <a href="#" class="course-list-action-btn">Join Course</a>
+  </div>
+
+  <ul class="course-list-container">
+    {% for course in courses %}
+      <li class="course-list-item">
+        <div class="course-list-info">
+          <span class="course-list-name">{{ course.title }}</span>
+          <span class="course-list-description">
+            by {{ course.owner }}{% if course.owner == user %} (Owned){% endif %}
+          </span>
+        </div>
+        <a href="{{ course.get_absolute_url }}" class="course-list-access-btn">Access</a>
+      </li>
+    {% empty %}
+      <li class="course-list-empty">You are not enrolled in any courses.</li>
+    {% endfor %}
+  </ul>
+</div>
 {% endblock %}

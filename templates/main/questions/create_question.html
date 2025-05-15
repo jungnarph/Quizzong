@@ -1,50 +1,61 @@
 {% extends 'main_base.html' %}
+{% load static %}
 
 {% block title %}Create Question{% endblock %}
 
 {% block content %}
-<h2>Add Question to {{ quiz.title }}</h2>
+<div class="create-question-page">
+<h2 class="create-question-title">
+    <img src="{% static 'images/Question.gif' %}" alt="Question Mark" class="create-question-gif">
+  Add Question to <span class="create-question-highlight">{{ quiz.title }}</span>
+</h2>
 
-<form method="POST">
+  <form method="POST" class="create-question-form">
     {% csrf_token %}
-    {% for field in form %}
-        {% if field.name != 'tags' %}
-            <p>
-                {{ field.label_tag }}<br>
-                {{ field }}<br>
-                {{ field.errors }}
-            </p>
-        {% endif %}
-    {% endfor %}
-
-    <div id="options-container">
-        <div class="options-header">
-            <h4>Options:</h4>
-            <button type="button" id="add-option">Add Option</button>
-        </div>
-        <div id="option-formset" class="mt-4">
-            <!-- Initial 2 options -->
-            <div class="option-group">
-                <input type="radio" name="correct_option" value="0" required>
-                <input type="text" name="option_text_0" placeholder="Enter Option" required>
-                <button type="button" class="remove-option" disabled>Remove</button>
-            </div>
-            <div class="option-group">
-                <input type="radio" name="correct_option" value="1" required>
-                <input type="text" name="option_text_1" placeholder="Enter Option" required>
-                <button type="button" class="remove-option" disabled>Remove</button>
-            </div>
-        </div>
-    </div>
-    <p>
-        {{ form.tags.label_tag }}<br>
-        {{ form.tags }}<br>
-        {{ form.tags.errors }}
-    </p>
     
-    <button type="submit">Save Question</button>
-</form>
+    <div class="create-question-fields">
+      {% for field in form %}
+        {% if field.name != 'tags' %}
+          <div class="create-question-field-group">
+            <label class="create-question-label">{{ field.label }}</label>
+            {{ field }}
+            <div class="create-question-error">{{ field.errors }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div id="options-container" class="create-question-options">
+      <div class="create-question-options-header">
+        <h4 class="create-question-options-title">Options:</h4>
+        <button type="button" id="add-option" class="create-question-add-btn">Add Option</button>
+      </div>
+
+      <div id="option-formset" class="create-question-option-set">
+        <div class="create-question-option-group">
+          <input type="radio" name="correct_option" value="0" required>
+          <input type="text" name="option_text_0" placeholder="Enter Option" required class="create-question-input">
+          <button type="button" class="create-question-remove-btn" disabled>Remove</button>
+        </div>
+        <div class="create-question-option-group">
+          <input type="radio" name="correct_option" value="1" required>
+          <input type="text" name="option_text_1" placeholder="Enter Option" required class="create-question-input">
+          <button type="button" class="create-question-remove-btn" disabled>Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="create-question-tags">
+      <label class="create-question-label">{{ form.tags.label }}</label>
+      {{ form.tags }}
+      <div class="create-question-error">{{ form.tags.errors }}</div>
+    </div>
+    
+    <button type="submit" class="create-question-submit-btn">Save Question</button>
+  </form>
+</div>
 {% endblock %}
+
 {% block scripts %}
 <script>
     // Toggle fields based on question type

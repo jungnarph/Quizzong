@@ -277,7 +277,7 @@
   
   th, td {
     border: none; /* Remove borders */
-    background-color: #851558 !important; /* Row background color */
+    background-color: red !important; /* Row background color */
     color: white !important;
   }
   
