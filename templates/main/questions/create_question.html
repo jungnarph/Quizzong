@@ -16,11 +16,11 @@
     <div class="create-question-fields">
       {% for field in form %}
         {% if field.name != 'tags' %}
-          <div class="create-question-field-group">
-            <label class="create-question-label">{{ field.label }}</label>
-            {{ field }}
-            <div class="create-question-error">{{ field.errors }}</div>
-          </div>
+        <p>
+          {{ field.label_tag }}<br>
+          {{ field }}<br>
+          {{ field.errors }}
+        </p>
         {% endif %}
       {% endfor %}
     </div>
@@ -32,15 +32,15 @@
       </div>
 
       <div id="option-formset" class="create-question-option-set">
-        <div class="create-question-option-group">
+        <div class="option-group">
           <input type="radio" name="correct_option" value="0" required>
           <input type="text" name="option_text_0" placeholder="Enter Option" required class="create-question-input">
-          <button type="button" class="create-question-remove-btn" disabled>Remove</button>
+          <button type="button" class="remove-option" disabled>Remove</button>
         </div>
-        <div class="create-question-option-group">
+        <div class="option-group">
           <input type="radio" name="correct_option" value="1" required>
           <input type="text" name="option_text_1" placeholder="Enter Option" required class="create-question-input">
-          <button type="button" class="create-question-remove-btn" disabled>Remove</button>
+          <button type="button" class="remove-option" disabled>Remove</button>
         </div>
       </div>
     </div>
@@ -63,13 +63,24 @@
     const optionsContainer = document.getElementById("options-container");
 
     function toggleFields() {
-        if (typeSelect.value === 'choice') {
-            optionsContainer.style.display = 'block';
-            document.querySelector('[name="correct_answer"]').closest('p').style.display = 'none';
-        } else {
-            optionsContainer.style.display = 'none';
-            document.querySelector('[name="correct_answer"]').closest('p').style.display = 'block';
-        }
+      if (typeSelect.value === 'choice') {
+          optionsContainer.style.display = 'block';
+          
+          // Enable required on options inputs
+          const radios = optionsContainer.querySelectorAll('input[type="radio"]');
+          const texts = optionsContainer.querySelectorAll('input[type="text"]');
+          radios.forEach(radio => radio.required = true);
+          texts.forEach(text => text.required = true);
+
+      } else {
+          optionsContainer.style.display = 'none';
+
+          // Disable required on options inputs
+          const radios = optionsContainer.querySelectorAll('input[type="radio"]');
+          const texts = optionsContainer.querySelectorAll('input[type="text"]');
+          radios.forEach(radio => radio.required = false);
+          texts.forEach(text => text.required = false);
+      }
     }
 
     toggleFields();

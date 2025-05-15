@@ -119,9 +119,9 @@ class Question(models.Model):
                 if not self.correct_answer:
                     raise ValidationError("Short answer questions must have a correct_answer.")
 
-    def get_all_quiz_questions(self):
-        return self.quiz.questions.all()
-
+    def points_display(self):
+        return f"{self.points} pt" if self.points == 1 else f"{self.points} pts"
+    
     def __str__(self):
         return f"{self.text[:50]} ({self.get_type_display()})"
 
@@ -133,23 +133,29 @@ class Option(models.Model):
     def __str__(self):
         return self.text
 
-# class QuizAttempt(models.Model):
-#     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     started_at = models.DateTimeField(auto_now_add=True)
-#     submitted_at = models.DateTimeField(null=True, blank=True)
-#     total_score = models.FloatField(default=0)
+class QuizAttempt(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    started_at = models.DateTimeField(auto_now_add=True)
+    submitted_at = models.DateTimeField(null=True, blank=True)
+    total_score = models.FloatField(default=0)
 
-#     class Meta:
-#         unique_together = ('quiz', 'user')
+    class Meta:
+        unique_together = ('quiz', 'user')
+    
+    def __str__(self):
+        return f"{self.user.username}'s attempt for {self.quiz.title}"
 
-# class Answer(models.Model):
-#     attempt = models.ForeignKey(QuizAttempt, on_delete=models.CASCADE, related_name='answers')
-#     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-#     selected_option = models.ForeignKey(Option, null=True, blank=True, on_delete=models.SET_NULL)  # For MCQ
-#     text_answer = models.TextField(null=True, blank=True)  # For SHORT or LONG answers
-#     is_correct = models.BooleanField(null=True)  # Can be null if manually checked
-#     score = models.FloatField(default=0)
+class Answer(models.Model):
+    attempt = models.ForeignKey(QuizAttempt, on_delete=models.CASCADE, related_name='answers')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    selected_option = models.ForeignKey(Option, null=True, blank=True, on_delete=models.SET_NULL)  # For MCQ
+    text_answer = models.TextField(null=True, blank=True)  # For SHORT or LONG answers
+    is_correct = models.BooleanField(null=True)  # Can be null if manually checked
+    score = models.FloatField(default=0)
+
+    def __str__(self):
+        return f"Answer to {self.question.text[:30]}"
 
 
     

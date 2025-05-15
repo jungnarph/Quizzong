@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Course, CourseEnrollment, CourseInvitation
 from .models import Quiz, Question, Option
+from .models import QuizAttempt, Answer
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
@@ -54,3 +55,16 @@ class OptionInline(admin.TabularInline):
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ('text', 'type')  # Display question text and type
     inlines = [OptionInline]  # Include options as an inline in the question form
+
+@admin.register(QuizAttempt)
+class QuizAttemptAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'quiz', 'total_score', 'submitted_at')
+    list_filter = ('submitted_at', 'quiz')
+    search_fields = ('user__username', 'quiz__title')
+    ordering = ('-submitted_at',)
+
+@admin.register(Answer)
+class AnswerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'attempt', 'question', 'is_correct', 'score')
+    list_filter = ('is_correct',)
+    search_fields = ('attempt__user__username', 'question__text')

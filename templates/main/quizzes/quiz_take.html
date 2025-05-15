@@ -1,0 +1,37 @@
+{% extends 'main_base.html' %}
+{% block title %}Take Quiz: {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="create-question-page">
+<h2>{{ quiz.title }}</h2>
+<p>{{ quiz.description }}</p>
+
+<form method="post" class="">
+  {% csrf_token %}
+  {% for question in questions %}
+    <div class="question-block create-question-page">
+      <p><strong>{{ forloop.counter }}. {{ question.text }} ({{ question.points_display }})</strong></p>
+
+      {% if question.type == 'choice' %}
+        {% for option in question.options.all %}
+          <label>
+            <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}">
+            {{ option.text }}
+          </label><br>
+        {% endfor %}
+
+      {% elif question.type == 'short' %}
+        <input type="text" name="question_{{ question.id }}" class="short-answer">
+
+      {% else %}
+        <textarea name="question_{{ question.id }}" rows="4" class="long-answer"></textarea>
+
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <button type="submit">Submit Quiz</button>
+</form>
+</div>
+
+{% endblock %}

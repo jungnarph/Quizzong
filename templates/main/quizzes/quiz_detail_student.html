@@ -1,0 +1,28 @@
+{% extends 'main_base.html' %}
+{% load static %}
+
+{% block title %}Quiz: {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="quiz-detail-page">
+
+  <h2 class="quiz-detail-title">
+    <img src="{% static 'images/Question.gif' %}" alt="Quiz Icon" class="quiz-detail-icon">
+    {{ quiz.title }}
+  </h2>
+  <p class="quiz-detail-description">{{ quiz.description }}</p>
+
+  <div class="quiz-detail-info">
+    <p><strong>Available From:</strong> {{ quiz.available_from|date:"M d, Y H:i" }}</p>
+    <p><strong>Due Date:</strong> {{ quiz.due_date|date:"M d, Y H:i" }}</p>
+    <p><strong>Time Limit:</strong> {{ quiz.time_limit }} minutes</p>
+  </div>
+
+  <div class="quiz-detail-buttons">
+    <a href="{% url 'quiz_start' course.id quiz.id %}" class="quiz-detail-btn quiz-detail-btn-primary">
+      ▶️ Take Quiz
+    </a>
+  </div>
+
+</div>
+{% endblock %}

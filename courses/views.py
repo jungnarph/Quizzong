@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.forms import modelformset_factory
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from django.urls import reverse
@@ -9,6 +10,7 @@ from .forms import CourseForm
 from .forms import QuizForm, QuestionForm
 from .models import Course, CourseEnrollment, CourseInvitation
 from .models import Quiz, Question, Option
+from .models import QuizAttempt, Answer
 
 @login_required
 def course_list(request):
@@ -188,12 +190,20 @@ def create_quiz(request, course_id):
 @login_required
 def quiz_detail(request, course_id, quiz_id):
     course = get_object_or_404(Course, id=course_id)
-    quiz = get_object_or_404(Quiz, id=quiz_id)
+    quiz = get_object_or_404(Quiz, id=quiz_id, course=course)
+
+    if course.owner == request.user:
+        template = 'main/quizzes/quiz_detail_owner.html'
+    elif course.students.filter(id=request.user.id).exists():
+        template = 'main/quizzes/quiz_detail_student.html'
+    else:
+        redirect('course_list')
+
     context = {
         'course': course,
         'quiz': quiz,
     }
-    return render(request, 'main/quizzes/quiz_detail.html', context)
+    return render(request, template, context)
 
 @login_required
 def update_quiz(request, course_id, quiz_id):
@@ -203,7 +213,8 @@ def update_quiz(request, course_id, quiz_id):
 def create_question(request, quiz_id=None, course_id=None):
     quiz = Quiz.objects.filter(pk=quiz_id).first() if quiz_id else None
     course = Course.objects.filter(pk=course_id).first() if course_id else None
-    if not ensure_course_owner(request, course):
+    if request.user != course.owner:
+        messages.error(request, "You are not authorized to edit this course.")
         return redirect('course_detail', course_id=course.id)
     if request.method == 'POST':
         form = QuestionForm(request.POST)
@@ -282,3 +293,87 @@ def question_list(request, course_id):
     }
 
     return render(request, 'main/questions/question_list.html', context)
+
+@login_required
+def start_quiz(request, course_id, quiz_id):
+    course = get_object_or_404(Course, id=course_id)
+    quiz = get_object_or_404(Quiz, id=quiz_id, course=course)
+
+    attempt, created = QuizAttempt.objects.get_or_create(
+        quiz=quiz,
+        user=request.user
+    )
+
+    if not created and attempt.submitted_at:  # ✅ Replace 'attempt.completed'
+        return redirect('quiz_result', course_id=course_id, quiz_id=quiz_id, attempt_id=attempt.id)
+
+    return redirect('quiz_take', course_id=course_id, quiz_id=quiz_id, attempt_id=attempt.id)
+
+@login_required
+def take_quiz(request, course_id, quiz_id, attempt_id):
+    attempt = get_object_or_404(QuizAttempt, id=attempt_id, user=request.user, quiz_id=quiz_id)
+    quiz = attempt.quiz
+
+    if attempt.submitted_at:
+        return redirect('quiz_result', course_id=course_id, quiz_id=quiz.id, attempt_id=attempt.id)
+
+    questions = quiz.questions.all()
+
+    if request.method == 'POST':
+        total_score = 0
+
+        for question in questions:
+            answer_obj, _ = Answer.objects.get_or_create(attempt=attempt, question=question)
+            if question.type == 'choice':
+                selected_option_id = request.POST.get(f'question_{question.id}')
+                if selected_option_id:
+                    try:
+                        option = question.options.get(id=selected_option_id)
+                        answer_obj.selected_option = option
+                        answer_obj.is_correct = option.is_correct
+                        answer_obj.score = 1 if option.is_correct else 0
+                        total_score += answer_obj.score
+                    except Option.DoesNotExist:
+                        answer_obj.is_correct = False
+                        answer_obj.score = 0
+
+            elif question.type == 'short':
+                answer_text = request.POST.get(f'question_{question.id}', '').strip()
+                answer_obj.text_answer = answer_text
+                # Auto grading for short answer (case-insensitive compare)
+                correct_answer = (question.correct_answer or '').strip()
+                is_correct = (answer_text.lower() == correct_answer.lower())
+                answer_obj.is_correct = is_correct
+                answer_obj.score = 1 if is_correct else 0
+                total_score += answer_obj.score
+
+            else:  # long answer
+                answer_text = request.POST.get(f'question_{question.id}', '').strip()
+                answer_obj.text_answer = answer_text
+                answer_obj.is_correct = None  # manual review
+                answer_obj.score = 0
+
+            answer_obj.save()
+
+        attempt.total_score = total_score
+        attempt.submitted_at = timezone.now()
+        attempt.save()
+
+        return redirect('quiz_result', course_id=course_id, quiz_id=quiz_id, attempt_id=attempt.id)
+
+    return render(request, 'main/quizzes/quiz_take.html', {
+        'quiz': quiz,
+        'questions': questions,
+        'attempt': attempt,
+    })
+
+@login_required
+def quiz_result(request, course_id, quiz_id, attempt_id):
+    attempt = get_object_or_404(QuizAttempt, id=attempt_id, user=request.user, quiz_id=quiz_id)
+    answers = attempt.answers.select_related('question', 'selected_option')
+
+    return render(request, 'main/quizzes/quiz_result.html', {
+        'quiz': attempt.quiz,
+        'attempt': attempt,
+        'answers': answers
+    })

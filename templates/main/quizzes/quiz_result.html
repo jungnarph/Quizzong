@@ -1,0 +1,21 @@
+{% extends 'main_base.html' %}
+{% block title %}Quiz Results: {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<h2>{{ quiz.title }} - Results</h2>
+<p>Total Score: {{ attempt.total_score }}</p>
+<p>Submitted At: {{ attempt.submitted_at }}</p>
+
+{% for answer in answers %}
+  <div class="result-question">
+    <p><strong>{{ forloop.counter }}. {{ answer.question.text }}</strong></p>
+    {% if answer.question.type == 'choice' %}
+      <p>Your answer: {{ answer.selected_option.text }}</p>
+      <p>Score: {{ answer.score }}</p>
+    {% else %}
+      <p>Your answer: {{ answer.text_answer }}</p>
+      <p>Score: {{ answer.score }}</p>
+    {% endif %}
+  </div>
+{% endfor %}
+{% endblock %}
