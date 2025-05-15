@@ -1,0 +1,78 @@
+{% extends "main_base.html" %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+
+<div class="container mt-5">
+    <h2>Edit Profile</h2>
+
+    <form method="post" enctype="multipart/form-data" id="profile-form">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        {{ profile_form.as_p }}
+
+        <!-- Choose Image Button -->
+        <div class="form-group">
+            <label>Upload New Profile Picture</label><br>
+            <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('id_profile_picture').click()">Choose Image</button>
+            <input type="file" id="id_profile_picture" name="profile_picture" accept="image/*" style="display:none;" onchange="loadAndCropImage(event)">
+        </div>
+
+        <!-- Cropper Preview -->
+        <div class="mt-3" style="max-width: 300px;">
+            <img id="crop-preview" style="width: 100%; border: 1px solid #ccc; display: none;" />
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Save Changes</button>
+        <a href="{% url 'profile' %}" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script>
+    let cropper;
+
+    function loadAndCropImage(event) {
+        const image = document.getElementById('crop-preview');
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                image.src = e.target.result;
+                image.style.display = 'block';
+
+                if (cropper) cropper.destroy();
+
+                cropper = new Cropper(image, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    responsive: true,
+                    autoCropArea: 1,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    document.getElementById('profile-form').addEventListener('submit', function (e) {
+        const fileInput = document.getElementById('id_profile_picture');
+
+        if (cropper && fileInput.files.length > 0) {
+            e.preventDefault();
+
+            cropper.getCroppedCanvas({
+                width: 300,
+                height: 300,
+            }).toBlob(function (blob) {
+                const file = new File([blob], fileInput.files[0].name, { type: 'image/jpeg' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+
+                e.target.submit();
+            }, 'image/jpeg');
+        }
+    });
+</script>
+{% endblock %}

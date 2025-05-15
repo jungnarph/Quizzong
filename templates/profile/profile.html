@@ -1,0 +1,67 @@
+{% extends "main_base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">User Profile</h2>
+
+    <div class="card shadow-sm p-4">
+        <div class="row align-items-center">
+            <!-- Profile Picture Column -->
+            <div class="col-md-4 text-center">
+                {% if request.user.profile.profile_picture %}
+                    <img src="{{ request.user.profile.profile_picture.url }}" 
+                         alt="Profile Picture" 
+                         class="img-thumbnail rounded-circle mb-3"
+                         style="width: 180px; height: 180px; object-fit: cover;">
+                {% else %}
+                    <div class="mb-3">
+                        <p>No profile picture uploaded.</p>
+                    </div>
+                {% endif %}
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+            </div>
+
+            <!-- User Info Column -->
+            <div class="col-md-8">
+                <h4 class="mb-3">{{ request.user.get_full_name|default:request.user.username }}</h4>
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <th scope="row" style="width: 150px;">Username:</th>
+                            <td>{{ request.user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Email:</th>
+                            <td>{{ request.user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">First Name:</th>
+                            <td>{{ request.user.first_name|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Last Name:</th>
+                            <td>{{ request.user.last_name|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Birthdate:</th>
+                            <td>{{ request.user.profile.birthdate|default:"Not set" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Location:</th>
+                            <td>{{ request.user.profile.location|default:"Not set" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Phone:</th>
+                            <td>{{ request.user.profile.phone|default:"Not set" }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Other Info:</th>
+                            <td>{{ request.user.profile.other_info|default:"None" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 
     'courses',
     'inbox',
+    'profiles',
 
     'taggit',
     'widget_tweaks',
@@ -168,3 +169,6 @@ ACCOUNT_EMAIL_VERIFICATION = os.getenv('ACCOUNT_EMAIL_VERIFICATION')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
