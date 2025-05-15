@@ -1,0 +1,152 @@
+{% extends 'main_base.html' %}
+{% block title %}Quiz History{% endblock %}
+
+{% block content %}
+<style>
+  .custom-history-page * {
+    all: unset;
+    all: revert-layer;
+    box-sizing: border-box;
+  }
+
+  .custom-history-page {
+    background-color: #fff6e5 !important;
+    font-family: 'Segoe UI', sans-serif !important;
+    padding: 40px 20px !important;
+  }
+
+  .custom-history-container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 25px;
+    background-color: #ffffff !important;
+    box-shadow: 0 8px 25px rgba(74, 68, 74, 0.1) !important;
+    border-radius: 12px !important;
+  }
+
+  .custom-history-header {
+    text-align: center !important;
+    margin-bottom: 30px !important;
+  }
+
+  .custom-history-header h1 {
+    color: #4a444a !important;
+    font-size: 2.2rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .custom-history-header p {
+    color: #4a444a !important;
+    font-size: 1rem !important;
+  }
+
+  .custom-history-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 20px !important;
+  }
+
+  .custom-history-table th,
+  .custom-history-table td {
+    padding: 14px 16px !important;
+    text-align: left !important;
+    color: #4a444a !important;
+  }
+
+  .custom-history-table th {
+    background-color: #4a444a !important;
+    color: white !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .custom-history-table td {
+    background-color: white !important;
+    border-bottom: 1px solid #eee !important;
+  }
+
+  .custom-history-table tr:hover td {
+    background-color: #fff6e5 !important;
+  }
+
+  .custom-badge {
+    display: inline-block !important;
+    padding: 5px 12px !important;
+    font-size: 0.85rem !important;
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    color: white !important;
+  }
+
+  .custom-badge.pass {
+    background-color: #4a444a !important;
+  }
+
+  .custom-badge.fail {
+    background-color: #c0392b !important;
+  }
+
+  @media (max-width: 768px) {
+    .custom-history-container {
+      padding: 15px !important;
+    }
+
+    .custom-history-table th,
+    .custom-history-table td {
+      font-size: 0.9rem !important;
+      padding: 10px !important;
+    }
+
+    .custom-history-header h1 {
+      font-size: 1.5rem !important;
+    }
+  }
+</style>
+
+<div class="custom-history-page">
+  <div class="custom-history-container">
+    <div class="custom-history-header">
+      <h1>Quiz History</h1>
+      <p>A summary of all quizzes you've taken</p>
+    </div>
+
+    <table class="custom-history-table">
+      <thead>
+        <tr>
+          <th>Quiz Title</th>
+          <th>Score</th>
+          <th>Result</th>
+          <th>Date Taken</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Cybersecurity Basics</td>
+          <td>95</td>
+          <td><span class="custom-badge pass">Pass</span></td>
+          <td>May 10, 2025 - 2:15 PM</td>
+        </tr>
+        <tr>
+          <td>Python Fundamentals</td>
+          <td>76</td>
+          <td><span class="custom-badge pass">Pass</span></td>
+          <td>May 8, 2025 - 5:40 PM</td>
+        </tr>
+        <tr>
+          <td>Advanced Networking</td>
+          <td>61</td>
+          <td><span class="custom-badge fail">Fail</span></td>
+          <td>May 4, 2025 - 11:00 AM</td>
+        </tr>
+        <tr>
+          <td>Intro to Databases</td>
+          <td>83</td>
+          <td><span class="custom-badge pass">Pass</span></td>
+          <td>May 1, 2025 - 9:30 AM</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

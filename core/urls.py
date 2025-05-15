@@ -26,9 +26,14 @@ def dashboard(request):
 def landing(request):
     return render(request, 'main/landing.html')
 
+@login_required
+def view_history(request):
+    return render(request, 'main/history.html')
+
 urlpatterns = [
     path('', landing, name='landing'),
     path('dashboard/', dashboard, name='dashboard'),
+    path('history', view_history, name='history'),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('social/', include('allauth.socialaccount.urls')),  # This line includes the socialaccount URLs
