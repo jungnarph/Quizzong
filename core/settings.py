@@ -158,9 +158,12 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_LOGOUT_ON_GET = True
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-GEMINI_API_KEY = 'AIzaSyArEYATtCo765d8-Vx6tebnRXxNEKulyZc'
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')

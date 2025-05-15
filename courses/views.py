@@ -108,7 +108,6 @@ def join_course_via_invitation(request, course_id, invitation_code):
     except CourseInvitation.DoesNotExist:
         return render(request, 'main/courses/invitation_invalid.html', {'course': course})
 
-
     if not invitation.is_valid():
         return render(request, 'main/courses/invitation_expired.html', {'course': course})
 
