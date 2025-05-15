@@ -1,14 +1,138 @@
 {% extends 'main_base.html' %}
-{% block title %}Create/Edit Quiz{% endblock %}
+{% block title %}Dashboard{% endblock %}
+
 {% block content %}
-{% if messages %}
-    <div class="messages">
-      {% for message in messages %}
-        <p class="message">{{ message }}</p>
-      {% endfor %}
+<style>
+  body {
+    background-color: #fff6e5;
+  }
+
+  .dashboard-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px 20px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #4a444a;
+  }
+
+  .dashboard-header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2.7rem;
+    color: #4a444a;
+    margin-bottom: 8px;
+  }
+
+  .dashboard-header p {
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-areas:
+      "a a b"
+      "c d b"
+      "e d f";
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+  }
+
+  .stat-card {
+    background-color: white;
+    border-left: 6px solid #4a444a;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 10px rgba(74, 68, 74, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-6px);
+  }
+
+  .stat-title {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #4a444a;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4a444a;
+  }
+
+  /* Custom layout areas */
+  .stat-a { grid-area: a; }
+  .stat-b { grid-area: b; }
+  .stat-c { grid-area: c; }
+  .stat-d { grid-area: d; }
+  .stat-e { grid-area: e; }
+  .stat-f { grid-area: f; }
+
+  .dashboard-footer {
+    text-align: center;
+    margin-top: 60px;
+    color: #888;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 900px) {
+    .stats-grid {
+      grid-template-areas:
+        "a"
+        "b"
+        "c"
+        "d"
+        "e"
+        "f";
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Welcome, {{ user.username }}</h1>
+    <p>Your personalized quiz performance overview</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card stat-a">
+      <div class="stat-title">Total Quizzes Taken</div>
+      <div class="stat-value">24</div>
     </div>
-{% endif %}
-{% if user.is_authenticated %}
-    <p>Hello, {{ user.username }}! Welcome to the dashboard</p>
-{% endif %}
+    <div class="stat-card stat-b">
+      <div class="stat-title">Total Quiz Scores</div>
+      <div class="stat-value">1987</div>
+    </div>
+    <div class="stat-card stat-c">
+      <div class="stat-title">Highest Quiz Score</div>
+      <div class="stat-value">98</div>
+    </div>
+    <div class="stat-card stat-d">
+      <div class="stat-title">Total Quizzes Passed</div>
+      <div class="stat-value">21</div>
+    </div>
+    <div class="stat-card stat-e">
+      <div class="stat-title">Top Performing Topic</div>
+      <div class="stat-value">Cybersecurity</div>
+    </div>
+    <div class="stat-card stat-f">
+      <div class="stat-title">Average Score</div>
+      <div class="stat-value">82.8</div>
+    </div>
+  </div>
+
+  <div class="dashboard-footer">
+    Last updated: May 15, 2025 — You're doing awesome!
+  </div>
+</div>
 {% endblock %}

@@ -1,18 +1,71 @@
 {% extends 'main_base.html' %}
 
 {% block content %}
-<h1>Message from {{ message.sender }}</h1>
-<p><strong>Subject:</strong> {{ message.subject }}</p>
-<p><strong>Content:</strong> {{ message.body }}</p>
+<style>
+    .detail-container {
+        max-width: 700px;
+        margin: auto;
+        padding: 20px;
+        color: #4a444a;
+    }
 
-{% if not message.read_at %}
-    <p><em>This message is unread.</em></p>
-{% endif %}
+    .detail-card {
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
 
-<form action="{% url 'inbox:delete_message' message.id %}" method="POST">
-    {% csrf_token %}
-    <button type="submit" class="button">Delete Message</button>
-</form>
+    .subject {
+        font-size: 1.3em;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
 
-<a href="{% url 'inbox:inbox' %}" class="button">Back to Inbox</a>
+    .unread {
+        color: red;
+        font-style: italic;
+    }
+
+    .button {
+        background: orange;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        margin-top: 20px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .delete-button {
+        background: #f44336;
+        margin-right: 10px;
+    }
+
+    .button:hover {
+        opacity: 0.9;
+    }
+</style>
+
+<div class="detail-container">
+    <div class="detail-card">
+        <div class="subject">{{ message.subject }}</div>
+        <p><strong>From:</strong> {{ message.sender }}</p>
+        <p><strong>Message:</strong><br>{{ message.body }}</p>
+
+        {% if not message.read_at %}
+            <p class="unread">(This message is unread)</p>
+        {% endif %}
+
+        <form action="{% url 'inbox:delete_message' message.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="button delete-button">Delete Message</button>
+        </form>
+
+        <a href="{% url 'inbox:inbox' %}" class="button">Back to Inbox</a>
+    </div>
+</div>
 {% endblock %}

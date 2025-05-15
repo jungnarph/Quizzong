@@ -7,6 +7,8 @@ from django.http import JsonResponse
 from courses.models import Course
 from .gemini import check_profanity
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 @login_required
 def inbox(request):
@@ -14,8 +16,13 @@ def inbox(request):
         recipient=request.user
     ).exclude(recipient=None).order_by('-timestamp')
 
-    return render(request, 'inbox/inbox.html', {'messages': received_messages})
+    # Always pass compose form so modal can render on the same page
+    compose_form = MessageForm(user=request.user)
 
+    return render(request, 'inbox/inbox.html', {
+        'messages': received_messages,
+        'compose_form': compose_form,
+    })
 @login_required
 def compose(request):
     if request.method == 'POST':
@@ -37,7 +44,6 @@ def compose(request):
                     )
                     warning_message.save()
 
-                # Render the warning page instead of redirect
                 return render(request, 'inbox/warning.html')
 
             message = form.save(commit=False)
@@ -57,10 +63,13 @@ def warning(request):
 def message_detail(request, message_id):
     message = get_object_or_404(Message, pk=message_id)
 
-    # Only the recipient marks it as read
-    if message.recipient == request.user and not message.read_at:
-        message.read_at = message.timestamp
+    # Mark as read if user is recipient and not already read
+    if request.user == message.recipient and message.read_at is None:
+        message.read_at = timezone.now()
         message.save()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'inbox/message_detail_partial.html', {'message': message})
 
     return render(request, 'inbox/message_detail.html', {'message': message})
 
@@ -68,16 +77,13 @@ def message_detail(request, message_id):
 def delete_message(request, message_id):
     message = get_object_or_404(Message, id=message_id)
 
-    # If current user is the recipient
-    if message.recipient == request.user:
-        message.recipient = None  # Hide from recipient only
+    if request.user == message.recipient:
+        message.recipient = None
         message.save()
-    # If current user is the sender
-    elif message.sender == request.user:
-        message.sender = None  # Hide from sender only
+    elif request.user == message.sender:
+        message.sender = None
         message.save()
 
-    # If both sender and recipient are None, delete permanently
     if message.sender is None and message.recipient is None:
         message.delete()
 
@@ -99,3 +105,31 @@ def load_recipients(request):
         except Course.DoesNotExist:
             pass
     return JsonResponse(list(recipients), safe=False)
+
+@login_required
+def filter_messages(request):
+    filter_type = request.GET.get('type', 'all')
+    user = request.user
+
+    if filter_type == 'sent':
+        messages = Message.objects.filter(sender=user).order_by('-timestamp')
+    elif filter_type == 'unread':
+        messages = Message.objects.filter(recipient=user, read_at__isnull=True).order_by('-timestamp')
+    else:
+        messages = Message.objects.filter(recipient=user).order_by('-timestamp')
+
+    return render(request, 'inbox/message_list_partial.html', {'messages': messages})
+
+@login_required
+@csrf_exempt  # Prefer to use CSRF token in JS, but here is fallback
+def mark_read(request, message_id):
+    if request.method == 'POST':
+        try:
+            message = Message.objects.get(pk=message_id, recipient=request.user)
+            if message.read_at is None:
+                message.read_at = timezone.now()
+                message.save()
+            return JsonResponse({'status': 'ok'})
+        except Message.DoesNotExist:
+            return JsonResponse({'status': 'not found'}, status=404)
+    return JsonResponse({'status': 'invalid method'}, status=400)
