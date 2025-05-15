@@ -10,4 +10,5 @@ urlpatterns = [
     path('message/<int:message_id>/delete/', views.delete_message, name='delete_message'),
     path('sent/', views.sent_messages, name='sent_messages'),  # ✅ new route
     path('load-recipients/', views.load_recipients, name='load_recipients'),
+    path('warning', views.warning, name='warning')
 ]

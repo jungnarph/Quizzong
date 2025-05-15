@@ -3,21 +3,18 @@
 {% block content %}
 <h1>Your Inbox</h1>
 
-<p>
-    <a href="{% url 'inbox:sent_messages' %}" class="button">View Sent Messages</a> |
-    <a href="{% url 'inbox:compose' %}" class="button">Compose New Message</a>
-</p>
-
 {% if messages %}
     <ul>
         {% for message in messages %}
             <li>
-                <a href="{% url 'inbox:message_detail' message.id %}">
-                    {{ message.sender }} - {{ message.content|truncatewords:10 }} 
+                <a href="{% url 'inbox:message_detail' message.id %}">{{ message.sender }} - {{ message.content|truncatewords:10 }}
                     {% if not message.read_at %}
                         <span>(Unread)</span>
                     {% endif %}
                 </a>
+                {% if message.sender == "admin" %}
+                    <span class="warning">(Message blocked due to profanity)</span>
+                {% endif %}
                 <form action="{% url 'inbox:delete_message' message.id %}" method="POST" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="button">Delete</button>
@@ -28,4 +25,7 @@
 {% else %}
     <p>No messages</p>
 {% endif %}
+
+
+<a href="{% url 'inbox:compose' %}" class="button">Compose New Message</a>
 {% endblock %}

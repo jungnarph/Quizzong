@@ -5,10 +5,15 @@ from .forms import MessageForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from courses.models import Course
+from .gemini import check_profanity
+from django.utils import timezone
 
 @login_required
 def inbox(request):
-    received_messages = Message.objects.filter(recipient=request.user).order_by('-timestamp')
+    received_messages = Message.objects.filter(
+        recipient=request.user
+    ).exclude(recipient=None).order_by('-timestamp')
+
     return render(request, 'inbox/inbox.html', {'messages': received_messages})
 
 @login_required
@@ -16,18 +21,42 @@ def compose(request):
     if request.method == 'POST':
         form = MessageForm(request.POST, user=request.user)
         if form.is_valid():
+            message_content = form.cleaned_data['body']
+
+            # Check for profanity using Gemini
+            if check_profanity(message_content):
+                admin_user = User.objects.filter(username='admin').first()
+
+                if admin_user:
+                    warning_message = Message(
+                        sender=admin_user,
+                        recipient=request.user,
+                        subject="Warning: Profanity Detected",
+                        body="Your message contains profanity and was not sent. Please revise your message.",
+                        timestamp=timezone.now()
+                    )
+                    warning_message.save()
+
+                # Render the warning page instead of redirect
+                return render(request, 'inbox/warning.html')
+
             message = form.save(commit=False)
             message.sender = request.user
             message.save()
             return redirect('inbox:inbox')
     else:
         form = MessageForm(user=request.user)
+
     return render(request, 'inbox/compose.html', {'form': form})
+
+@login_required
+def warning(request):
+    return render(request, 'inbox/warning.html')
 
 @login_required
 def message_detail(request, message_id):
     message = get_object_or_404(Message, pk=message_id)
-    
+
     # Only the recipient marks it as read
     if message.recipient == request.user and not message.read_at:
         message.read_at = message.timestamp
@@ -38,7 +67,7 @@ def message_detail(request, message_id):
 @login_required
 def delete_message(request, message_id):
     message = get_object_or_404(Message, id=message_id)
-    
+
     # If current user is the recipient
     if message.recipient == request.user:
         message.recipient = None  # Hide from recipient only
@@ -51,7 +80,7 @@ def delete_message(request, message_id):
     # If both sender and recipient are None, delete permanently
     if message.sender is None and message.recipient is None:
         message.delete()
-    
+
     return redirect('inbox:inbox')
 
 @login_required
