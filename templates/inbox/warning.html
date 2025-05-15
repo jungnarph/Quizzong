@@ -1,0 +1,10 @@
+{% extends 'main_base.html' %}
+
+{% block content %}
+<div class="alert alert-warning mt-4" role="alert">
+  <h4 class="alert-heading">Message Not Sent</h4>
+  <p>Your message contains profanity and was blocked. Please revise it and try again.</p>
+  <hr>
+  <a href="{% url 'inbox:compose' %}" class="btn btn-primary">Back to Compose</a>
+</div>
+{% endblock %}
