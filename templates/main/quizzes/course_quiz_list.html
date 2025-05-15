@@ -1,30 +1,39 @@
 {% extends 'main_base.html' %}
+{% load static %}
 
 {% block content %}
-  <h1>Quizzes for {{ course.title }}</h1>
+  <div class="quiz-list-page">
+    <h1 class="quiz-list-title">Quizzes for {{ course.title }}</h1>
 
-  {% if quizzes %}
-    <ul>
-      {% for quiz in quizzes %}
-        <li>
-          <a href="{% url 'quiz_detail' course.id quiz.id %}">{{ quiz.title }}</a>
-          <p>{{ quiz.description }}</p>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No quizzes found for this course. 
-      {% if user == course.owner %}
-      <a href="{% url 'create_quiz' course.id %}">(Create a new quiz)</a>
-      {% endif %}
-    </p>
-  {% endif %}
-    {% if user == course.owner %}
-        <p>Admin Menu:</p>
-        <ul>
-        <li><a href="{% url 'create_quiz' course.id %}">Create Quiz</a></li>
-        </ul>
+    {% if quizzes %}
+      <ul class="quiz-list-container">
+        {% for quiz in quizzes %}
+          <li class="quiz-list-item">
+            <div class="quiz-list-info">
+              <span class="quiz-list-name">
+                <img src="{% static 'images/Question.gif'%}" alt="Question" class="quiz-icon">
+                {{ quiz.title }}</span>
+              <p class="quiz-list-description">{{ quiz.description }}</p>
+            </div>
+            <a href="{% url 'quiz_detail' course.id quiz.id %}" class="quiz-list-access-btn">Access</a>
+          </li>
+        {% endfor %}
+      </ul>
     {% else %}
-        <p>Menu: </p>
+      <p class="quiz-list-empty">No quizzes found for this course.
+        {% if user == course.owner %}
+        <a href="{% url 'create_quiz' course.id %}" class="quiz-list-create-link">(Create a new quiz)</a>
+        {% endif %}
+      </p>
     {% endif %}
+
+    {% if user == course.owner %}
+      <div class="quiz-list-admin-menu">
+        <h2 class="quiz-list-admin-title">Admin Menu</h2>
+        <ul class="quiz-list-admin-links">
+          <li><a href="{% url 'create_quiz' course.id %}">Create Quiz</a></li>
+        </ul>
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}

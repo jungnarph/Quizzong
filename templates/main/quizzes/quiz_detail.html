@@ -1,24 +1,40 @@
 {% extends 'main_base.html' %}
-{% block title %}Quiz Detail{% endblock %}
+{% load static %}
+
+{% block title %}Quiz: {{ quiz.title }}{% endblock %}
 
 {% block content %}
-<h2>{{ quiz.title }}</h2>
-<p>{{ quiz.description }}</p>
+<div class="quiz-detail-page">
 
-<a href="{% url 'quiz_create_question' course.id quiz.id %}" class="btn btn-primary">Create Question</a>
-<a href="{% url 'quiz_import_question' course.id quiz.id %}" class="btn btn-secondary">Import Question</a>
+  <h2 class="quiz-detail-title">
+    <img src="{% static 'images/Question.gif' %}" alt="Quiz Icon" class="quiz-detail-icon">
+    {{ quiz.title }}
+  </h2>
+  <p class="quiz-detail-description">{{ quiz.description }}</p>
 
-<hr>
-
-<h3>Questions</h3>
-{% for question in quiz.questions.all %}
-  <div class="card my-2">
-    <div class="card-body">
-      {{ question.text }}
-      <!-- Optionally: Edit / Delete buttons -->
-    </div>
+  <div class="quiz-detail-buttons">
+    <a href="{% url 'quiz_create_question' course.id quiz.id %}" class="quiz-detail-btn quiz-detail-btn-primary">
+      ➕ Create Question
+    </a>
+    <a href="{% url 'quiz_import_question' course.id quiz.id %}" class="quiz-detail-btn quiz-detail-btn-secondary">
+      📥 Import Questions
+    </a>
   </div>
-{% empty %}
-  <p>No questions added yet.</p>
-{% endfor %}
+
+  <hr class="quiz-detail-divider">
+
+  <h3 class="quiz-detail-subtitle">📝 Questions</h3>
+
+  {% for question in quiz.questions.all %}
+    <div class="quiz-detail-question-card">
+      <div class="quiz-detail-question-body">
+        {{ question.text }}
+        <!-- Add edit/delete buttons here if needed -->
+      </div>
+    </div>
+  {% empty %}
+    <p class="quiz-detail-empty">⚠️ No questions added yet.</p>
+  {% endfor %}
+
+</div>
 {% endblock %}

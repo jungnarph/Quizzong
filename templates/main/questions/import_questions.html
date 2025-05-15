@@ -1,37 +1,48 @@
 {% extends "main_base.html" %}
-{% block content %}
-<h2>Import Questions to "{{ quiz.title }}"</h2>
+{% load static %}
 
-<form method="post">
+{% block content %}
+<div class="import-questions-page">
+  <h2 class="import-questions-title">
+    Import Questions to <span class="import-questions-highlight">"{{ quiz.title }}"</span>
+    <img src="{% static 'images/Question.gif' %}" alt="?" class="import-questions-gif">
+  </h2>
+
+  <form method="post">
     {% csrf_token %}
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Question</th>
-                <th>Type</th>
-                <th>Tags</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for question in available_questions %}
-            <tr>
-                <td><input type="checkbox" name="question_ids" value="{{ question.id }}"></td>
-                <td>{{ question.text }}</td>
-                <td>{{ question.get_type_display }}</td>
-                <td>
-                    {% for tag in question.tags.all %}
-                        <span class="badge bg-secondary">{{ tag.name }}</span>
-                    {% endfor %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4">No available questions to import.</td></tr>
+    <table class="import-questions-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Question</th>
+          <th>Type</th>
+          <th>Tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for question in available_questions %}
+        <tr>
+          <td><input type="checkbox" name="question_ids" value="{{ question.id }}"></td>
+          <td>{{ question.text }}</td>
+          <td>{{ question.get_type_display }}</td>
+          <td>
+            {% for tag in question.tags.all %}
+              <span class="import-questions-tag">{{ tag.name }}</span>
             {% endfor %}
-        </tbody>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="import-questions-empty">No available questions to import.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
 
-    <button type="submit" class="btn btn-primary">Import Selected Questions</button>
-    <a href="{% url 'quiz_detail' course.id quiz.id %}" class="btn btn-secondary">Cancel</a>
-</form>
+    <div class="import-questions-buttons">
+      <button type="submit" class="import-questions-submit">Import Selected Questions</button>
+      <a href="{% url 'quiz_detail' course.id quiz.id %}" class="import-questions-cancel">Cancel</a>
+    </div>
+  </form>
+</div>
 {% endblock %}
