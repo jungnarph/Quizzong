@@ -3,66 +3,78 @@
 {% block content %}
 <style>
     .compose-container {
-        max-width: 600px;
-        margin: 2rem auto;
-        padding: 2rem;
-        background-color: #4a444a;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
+    max-width: 90%;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(20, 20, 20, 0.9);
+    border: 2px solid #fff;
+    border-radius: 16px;
+    color: #fff;
+    box-shadow: 0 0 15px #000;
+    font-family: 'Pixelion', sans-serif;
+}
 
-    .compose-container h2 {
-        text-align: center;
-        color: white;
-        margin-bottom: 1.5rem;
-    }
+.compose-container h2 {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    text-shadow: 1px 1px #000;
+}
 
-    .form-group {
-        margin-bottom: 1.2rem;
-    }
+.form-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
 
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 0.4rem;
-        color: white;
-    }
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #f0c93d;
+}
 
-    .form-group select,
-    .form-group input[type="text"],
-    .form-group textarea {
-        width: 100%;
-        padding: 0.6rem 0.8rem;
-        border: 1px solid #fff6e5;
-        border-radius: 6px;
-        font-size: 1rem;
-        box-sizing: border-box;
-    }
+.form-group select,
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #121212;
+    color: #fff;
+    box-sizing: border-box;
+}
 
-    textarea {
-        height: 150px;
-        resize: vertical;
-    }
+textarea {
+    height: 150px;
+    resize: vertical;
+}
 
-    .send-button {
-        display: inline-block;
-        padding: 0.75rem 1.5rem;
-        background-color: #ff7a00;
-        color: white;
-        font-weight: bold;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
+.send-button {
+    display: inline-block;
+    padding: 0.7rem 1.4rem;
+    background: #fff;
+    color: #000;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 6px #fff;
+    transition: background 0.2s ease;
+    margin-top: 1rem;
+    font-family: 'Pixelion', sans-serif;
+}
 
-    .send-button:hover {
-        background-color: #e76f00;
-    }
+.send-button:hover {
+    background: #f0c93d;
+    color: #000;
+}
 
-    a {
-        text-decoration: none;
-    }
+a {
+    text-decoration: none;
+}
+
 </style>
 
 <div class="compose-container">

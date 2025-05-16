@@ -53,7 +53,12 @@
       {% endif %}
     </div>
     {% else %}
-    <p>Menu:</p>
+    <div class="admin-menu">
+      <h2>Admin Menu</h2>
+      <ul class="quiz-list-admin-links">
+        <li><a href="{% url 'course_quiz_list' course.id %}">Quiz List</a></li>
+      </ul>
+    </div>
     {% endif %}
   </section>
 </div>

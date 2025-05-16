@@ -1,26 +1,37 @@
 {% extends 'main_base.html' %}
+{% load static %}
 {% block title %}Quiz Results: {{ quiz.title }}{% endblock %}
 
 {% block content %}
-<h2>{{ quiz.title }} - Results</h2>
-<p>Total Score: {{ attempt.total_score }}</p>
-<p>Submitted At: {{ attempt.submitted_at }}</p>
+<div class="quiz-results-page">
+  <h2 class="quiz-results-title">
+    <img src="{% static 'images/Question.gif' %}" alt="?" class="quiz-results-gif">
+    {{ quiz.title }} - Results
+  </h2>
 
-{% for answer in answers %}
-  <div class="result-question">
-    <p><strong>{{ forloop.counter }}. {{ answer.question.text }}</strong></p>
-    {% if answer.question.type == 'choice' %}
-      <p>Your answer: {{ answer.selected_option.text }}</p>
-      <p>Score: {{ answer.score }}</p>
-    {% else %}
-      <p>Your answer: {{ answer.text_answer }}</p>
-      <p>Score: {{ answer.score }}</p>
-    {% endif %}
+  <div class="quiz-results-summary">
+    <p><strong>Total Score:</strong> {{ attempt.total_score }}</p>
+    <p><strong>Submitted At:</strong> {{ attempt.submitted_at }}</p>
   </div>
-{% endfor %}
 
-<hr>
+  {% for answer in answers %}
+    <div class="quiz-results-question">
+      <p class="quiz-results-question-text"><strong>{{ forloop.counter }}. {{ answer.question.text }}</strong></p>
+
+      {% if answer.question.type == 'choice' %}
+        <p class="quiz-results-answer"><strong>Your answer:</strong> {{ answer.selected_option.text }}</p>
+        <p class="quiz-results-score"><strong>Score:</strong> {{ answer.score }}</p>
+      {% else %}
+        <p class="quiz-results-answer"><strong>Your answer:</strong> {{ answer.text_answer }}</p>
+        <p class="quiz-results-score"><strong>Score:</strong> {{ answer.score }}</p>
+      {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="quiz-results-page">
 <h3>Personalized AI Study Recommendations</h3>
 <p>{{ recommendation|linebreaksbr }}</p>
+</div>
 
 {% endblock %}
