@@ -1,65 +1,172 @@
 {% extends "main_base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-sm">
-        <!-- Card Header with User Name -->
-        <div class="card-header bg-primary text-white text-center">
-            <h2 class="mb-0">{{ request.user.get_full_name|default:request.user.username }}</h2>
+<style>
+    body {
+        background-color: #fff6e5;
+        color: #fff;
+        font-family: 'Pixelion', sans-serif;
+    }
+
+    .profile-card {
+        background: rgba(30, 30, 30, 0.95);
+        border-radius: 16px;
+        box-shadow: 0 0 15px #f0c93d;
+        padding: 2rem;
+        margin-top: 3rem;
+    }
+
+    .profile-header {
+        background: #f0c93d;
+        color: #000;
+        padding: 1rem 0;
+        text-align: center;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .profile-header h2 {
+        margin: 0;
+        font-size: 2rem;
+    }
+
+    .profile-image {
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #f0c93d;
+        box-shadow: 0 0 10px #f0c93d;
+        margin-bottom: 1rem;
+    }
+
+    .btn-edit {
+        background: #fff;
+        color: #000;
+        font-weight: bold;
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 0 6px #fff;
+        text-decoration: none;
+        transition: background 0.2s ease;
+    }
+
+    .btn-edit:hover {
+        background: #f0c93d;
+        color: #000;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-auto-rows: auto;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .info-box {
+        background-color: rgba(50, 50, 50, 0.95);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 0 6px #f0c93d50;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .info-box.span-2 {
+        grid-column: span 2;
+    }
+
+    .info-box.span-3 {
+        grid-column: span 3;
+    }
+
+    .info-title {
+        color: #f0c93d;
+        font-size: 0.9rem;
+        font-weight: bold;
+        margin-bottom: 0.4rem;
+    }
+
+    .info-value {
+        color: #fff;
+        font-size: 1rem;
+        word-wrap: break-word;
+    }
+
+    @media (max-width: 576px) {
+        .profile-image {
+            width: 140px;
+            height: 140px;
+        }
+
+        .info-box.span-2,
+        .info-box.span-3 {
+            grid-column: span 1 !important;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="profile-card mx-auto col-md-10 col-lg-8">
+        <!-- Header with User Name -->
+        <div class="profile-header">
+            <h2>{{ request.user.get_full_name|default:request.user.username }}</h2>
         </div>
 
-        <div class="card-body">
-            <!-- Profile Picture & Edit Button -->
-            <div class="d-flex flex-column align-items-center mb-4">
-                {% if request.user.profile.profile_picture %}
-                    <img src="{{ request.user.profile.profile_picture.url }}"
-                         alt="Profile Picture"
-                         class="img-thumbnail rounded-circle mb-3"
-                         style="width: 180px; height: 180px; object-fit: cover;">
-                {% else %}
-                    <div class="mb-3 text-muted fst-italic">No profile picture uploaded.</div>
-                {% endif %}
-                <a href="{% url 'edit_profile' %}" class="btn btn-outline-primary px-4">Edit Profile</a>
+        <!-- Profile Picture & Edit Button -->
+        <div class="d-flex flex-column align-items-center mt-4">
+            {% if request.user.profile.profile_picture %}
+                <img src="{{ request.user.profile.profile_picture.url }}"
+                     alt="Profile Picture"
+                     class="profile-image">
+            {% else %}
+                <div class="mb-3 text-muted fst-italic">No profile picture uploaded.</div>
+            {% endif %}
+            <a href="{% url 'edit_profile' %}" class="btn-edit mt-2">Edit Profile</a>
+        </div>
+
+        <!-- Mosaic Info Layout -->
+        <div class="info-grid mt-4">
+            <div class="info-box span-2">
+                <div class="info-title">Username</div>
+                <div class="info-value">{{ request.user.username }}</div>
             </div>
 
-            <!-- User Info Table -->
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered align-middle mb-0">
-                    <tbody>
-                        <tr>
-                            <th scope="row" style="width: 150px;">Username</th>
-                            <td>{{ request.user.username }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Email</th>
-                            <td>{{ request.user.email }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">First Name</th>
-                            <td>{{ request.user.first_name|default:"-" }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Last Name</th>
-                            <td>{{ request.user.last_name|default:"-" }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Birthdate</th>
-                            <td>{{ request.user.profile.birthdate|default:"Not set" }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Location</th>
-                            <td>{{ request.user.profile.location|default:"Not set" }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Phone</th>
-                            <td>{{ request.user.profile.phone|default:"Not set" }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Other Info</th>
-                            <td>{{ request.user.profile.other_info|default:"None" }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="info-box">
+                <div class="info-title">Email</div>
+                <div class="info-value">{{ request.user.email }}</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-title">First Name</div>
+                <div class="info-value">{{ request.user.first_name|default:"-" }}</div>
+            </div>
+
+            <div class="info-box span-2">
+                <div class="info-title">Last Name</div>
+                <div class="info-value">{{ request.user.last_name|default:"-" }}</div>
+            </div>
+
+            <div class="info-box span-3">
+                <div class="info-title">Birthdate</div>
+                <div class="info-value">{{ request.user.profile.birthdate|default:"Not set" }}</div>
+            </div>
+
+            <div class="info-box span-3">
+                <div class="info-title">Location</div>
+                <div class="info-value">{{ request.user.profile.location|default:"Not set" }}</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-title">Phone</div>
+                <div class="info-value">{{ request.user.profile.phone|default:"Not set" }}</div>
+            </div>
+
+            <div class="info-box span-2">
+                <div class="info-title">Other Info</div>
+                <div class="info-value">{{ request.user.profile.other_info|default:"None" }}</div>
             </div>
         </div>
     </div>
