@@ -11,6 +11,8 @@ from .forms import QuizForm, QuestionForm
 from .models import Course, CourseEnrollment, CourseInvitation
 from .models import Quiz, Question, Option
 from .models import QuizAttempt, Answer
+from . import gemini
+from collections import defaultdict
 
 @login_required
 def course_list(request):
@@ -372,8 +374,40 @@ def quiz_result(request, course_id, quiz_id, attempt_id):
     attempt = get_object_or_404(QuizAttempt, id=attempt_id, user=request.user, quiz_id=quiz_id)
     answers = attempt.answers.select_related('question', 'selected_option')
 
+    # Analyze performance by tag
+    tag_performance = defaultdict(lambda: {"correct": 0, "incorrect": 0})
+    for answer in answers:
+        question = answer.question
+        score = answer.score or 0
+        correct = score > 0  # Treat score > 0 as correct
+        for tag in question.tags.names():
+            if correct:
+                tag_performance[tag]["correct"] += 1
+            else:
+                tag_performance[tag]["incorrect"] += 1
+
+    # Build prompt for Gemini AI
+    prompt_lines = [
+        "Based on the student's quiz results, provide tailored study recommendations focusing on the topics (tags) below:",
+        ""
+    ]
+    for tag, perf in tag_performance.items():
+        prompt_lines.append(f"- {tag}: {perf['correct']} correct, {perf['incorrect']} incorrect")
+    prompt_lines.append("")
+    prompt_lines.append("Give suggestions on which topics to review more and how to improve understanding.")
+
+    prompt = "\n".join(prompt_lines)
+
+    # Call Gemini to generate recommendation
+    try:
+        recommendation = gemini.generate_recommendation(prompt)
+    except Exception as e:
+        print(f"Gemini API error: {e}")
+        recommendation = "AI recommendation service is currently unavailable."
+
     return render(request, 'main/quizzes/quiz_result.html', {
         'quiz': attempt.quiz,
         'attempt': attempt,
-        'answers': answers
+        'answers': answers,
+        'recommendation': recommendation,
     })
