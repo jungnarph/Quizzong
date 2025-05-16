@@ -110,14 +110,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'quizzong',
-        'USER': os.getenv('POSTGRES_USER'),  # Use environment variable for security
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),  # Use environment variable for security
-        'HOST': 'localhost',  # Or your DB host
-        'PORT': '5432',       # Default PostgreSQL port
-    }
+    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=600),
 }
 
 
