@@ -13,7 +13,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <link rel="stylesheet" href="{% static 'css/laravel_styles_1.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/quiz_styles_1.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/quiz_styles_3.css' %}" />
     {% block external_links %} {% endblock %}
     <title>{% block title %} {% endblock %}</title>
     {% block styles %} {% endblock %}
@@ -72,7 +72,7 @@
         </li>
 
         <li class="mt-4">
-          <a href="" class="nav-link">
+          <a href="{% url 'profile' %}" class="nav-link">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
