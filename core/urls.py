@@ -20,6 +20,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from courses.views import quiz_list, create_quiz_generic
 
 @login_required
 def dashboard(request):
@@ -40,6 +41,8 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('social/', include('allauth.socialaccount.urls')),  # This line includes the socialaccount URLs
     path('courses/', include('courses.urls')),
+    path('quizzes/', quiz_list, name='quizzes'),
+    path('quizzes/create', create_quiz_generic, name='create_quiz_generic'),
     path('inbox/', include('inbox.urls')),
     path('profile/', include('profiles.urls')),
 ]
