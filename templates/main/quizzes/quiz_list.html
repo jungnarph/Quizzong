@@ -1,0 +1,37 @@
+{% extends 'main_base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="quiz-list-page">
+    <h1 class="quiz-list-title">All Quizzes</h1>
+<form method="get" action="{% url 'quizzes' %}">
+  <input type="text" name="q" placeholder="Search quizzes..." value="{{ search_query }}" />
+  <button type="submit">Search</button>
+</form>
+{% if quizzes %}
+  <ul class="quiz-list-container">
+    {% for quiz in quizzes %}
+      <li class="quiz-list-item">
+        <div class="quiz-list-info">
+          <span class="quiz-list-name">
+            <img src="{% static 'images/Question.gif'%}" alt="Question" class="quiz-icon">
+            {{ quiz.title }} ({{ quiz.course.title }})
+          </span>
+          <p class="quiz-list-description">{{ quiz.description }}</p>
+        </div>
+        <a href="{% url 'quiz_detail' quiz.course.id quiz.id %}" class="quiz-list-access-btn">Access</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="quiz-list-empty">No quizzes found.</p>
+{% endif %}
+
+      <div class="quiz-list-admin-menu">
+        <h2 class="quiz-list-admin-title">Menu</h2>
+        <ul class="quiz-list-admin-links">
+          <li><a href="{% url 'create_quiz_generic' %}">Create Quiz</a></li>
+        </ul>
+      </div>
+  </div>
+{% endblock %}

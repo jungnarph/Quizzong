@@ -11,19 +11,29 @@ from .forms import QuizForm, QuestionForm
 from .models import Course, CourseEnrollment, CourseInvitation
 from .models import Quiz, Question, Option
 from .models import QuizAttempt, Answer
+from . import gemini
+from collections import defaultdict
+from django.db.models import Q
 
 @login_required
 def course_list(request):
     user = request.user
+    search_query = request.GET.get('q', '')
 
     enrolled_courses = user.enrolled_courses.exclude(owner=user)
     owned_courses = Course.objects.filter(owner=user)
 
-    # Remove duplicates from the combined queryset
     courses = (enrolled_courses | owned_courses).distinct()
 
+    if search_query:
+        courses = courses.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
     context = {
-        'courses': courses
+        'courses': courses,
+        'search_query': search_query
     }
 
     return render(request, 'main/courses/course_list.html', context)
@@ -154,6 +164,22 @@ def edit_course(request, course_id):
     return render(request, 'main/courses/edit_course.html', context)
 
 @login_required
+def quiz_list(request):
+    search_query = request.GET.get('q', '')
+    quizzes = Quiz.objects.all().select_related('course')
+
+    if search_query:
+        quizzes = quizzes.filter(
+            Q(title__icontains=search_query) |
+            Q(course__title__icontains=search_query)
+        )
+
+    return render(request, 'main/quizzes/quiz_list.html', {
+        'quizzes': quizzes,
+        'search_query': search_query,
+    })
+
+@login_required
 def course_quiz_list(request, course_id):
     # Get the course using the provided course_id
     course = get_object_or_404(Course, id=course_id)
@@ -186,6 +212,25 @@ def create_quiz(request, course_id):
         return redirect('quiz_detail', course_id=course_id, quiz_id=quiz.id)
 
     return render(request, 'main/quizzes/create_update_quiz.html', context)
+
+@login_required
+def create_quiz_generic(request):
+    # Only allow the user to pick from courses they own
+    courses_owned = Course.objects.filter(owner=request.user)
+    
+    if request.method == 'POST':
+        form = QuizForm(request.POST)
+        if form.is_valid():
+            quiz = form.save(commit=False)
+            if quiz.course.owner != request.user:
+                return HttpResponseForbidden("You're not allowed to create a quiz in this course.")
+            quiz.save()
+            form.save_m2m()
+            return redirect('quiz_detail', course_id=quiz.course.id, quiz_id=quiz.id)
+    else:
+        form = QuizForm()
+
+    return render(request, 'main/quizzes/create_update_quiz.html', {'quiz_form': form})
 
 @login_required
 def quiz_detail(request, course_id, quiz_id):
@@ -372,8 +417,40 @@ def quiz_result(request, course_id, quiz_id, attempt_id):
     attempt = get_object_or_404(QuizAttempt, id=attempt_id, user=request.user, quiz_id=quiz_id)
     answers = attempt.answers.select_related('question', 'selected_option')
 
+    # Analyze performance by tag
+    tag_performance = defaultdict(lambda: {"correct": 0, "incorrect": 0})
+    for answer in answers:
+        question = answer.question
+        score = answer.score or 0
+        correct = score > 0  # Treat score > 0 as correct
+        for tag in question.tags.names():
+            if correct:
+                tag_performance[tag]["correct"] += 1
+            else:
+                tag_performance[tag]["incorrect"] += 1
+
+    # Build prompt for Gemini AI
+    prompt_lines = [
+        "Based on the student's quiz results, provide tailored study recommendations focusing on the topics (tags) below:",
+        ""
+    ]
+    for tag, perf in tag_performance.items():
+        prompt_lines.append(f"- {tag}: {perf['correct']} correct, {perf['incorrect']} incorrect")
+    prompt_lines.append("")
+    prompt_lines.append("Give suggestions on which topics to review more and how to improve understanding.")
+
+    prompt = "\n".join(prompt_lines)
+
+    # Call Gemini to generate recommendation
+    try:
+        recommendation = gemini.generate_recommendation(prompt)
+    except Exception as e:
+        print(f"Gemini API error: {e}")
+        recommendation = "AI recommendation service is currently unavailable."
+
     return render(request, 'main/quizzes/quiz_result.html', {
         'quiz': attempt.quiz,
         'attempt': attempt,
-        'answers': answers
+        'answers': answers,
+        'recommendation': recommendation,
     })

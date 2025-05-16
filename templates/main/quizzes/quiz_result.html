@@ -25,12 +25,13 @@
         <p class="quiz-results-answer"><strong>Your answer:</strong> {{ answer.text_answer }}</p>
         <p class="quiz-results-score"><strong>Score:</strong> {{ answer.score }}</p>
       {% endif %}
-    </div>
+  </div>
   {% endfor %}
 </div>
 
 <div class="quiz-results-page">
-  <p class="quiz-results-answer"><strong>Personalized Ai Recommendation:</strong></p>
+<h3>Personalized AI Study Recommendations</h3>
+<p>{{ recommendation|linebreaksbr }}</p>
 </div>
 
 {% endblock %}
